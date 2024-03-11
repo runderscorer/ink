@@ -7,11 +7,11 @@ class Api::V1::GamesController < ApplicationController
 
     render json: { errors: game.errors.full_messages }, status: 400 and return unless game.valid?
 
-    render json: { game: game }, status: :ok
+    render json: GameSerializer.new(game), status: :ok
   end
 
   def search
-    render json: { game: @game }, status: :ok
+    render json: GameSerializer.new(@game), status: :ok
   end
 
   private

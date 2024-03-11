@@ -6,14 +6,16 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       post :create, params: { room_code: 'pizza' }
 
       expect(response.status).to eq(200)
-      expect(parse_response['game']['room_code']).to eq('pizza')
+
+      expect(parse_response_attributes['room_code']).to eq('pizza')
     end
 
     it 'should create a new game with a random room code if one is not provided' do
       post :create
 
       expect(response.status).to eq(200)
-      expect(parse_response['game']['room_code']).not_to be_nil
+
+      expect(parse_response_attributes['room_code']).not_to be_nil
     end
 
     it 'should return an error message if the room code is already taken' do
@@ -47,7 +49,8 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       get :search, params: { room_code: 'FOUND' }
 
       expect(response.status).to eq(200)
-      expect(parse_response['game']['room_code']).to eq('FOUND')
+
+      expect(parse_response_attributes['room_code']).to eq('FOUND')
     end
   end
 end
