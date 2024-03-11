@@ -17,4 +17,10 @@ RSpec.describe 'Game', type: :model do
       expect(game.errors.full_messages.last).to eq("Room code can't be blank")
     end
   end
+
+  it 'should normalize the room_code before saving' do
+    game = create(:game, room_code: 'pizza')
+
+    expect(game.room_code).to eq('PIZZA')
+  end
 end

@@ -7,7 +7,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
       expect(response.status).to eq(200)
 
-      expect(parse_response_attributes['room_code']).to eq('pizza')
+      expect(parse_response_attributes['room_code']).to eq('PIZZA')
     end
 
     it 'should create a new game with a random room code if one is not provided' do
@@ -45,8 +45,20 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
     it 'should return a game if one is found by room code' do
       game = create(:game, room_code: 'FOUND')
+      create_list(:player, 3, game: game)
 
       get :search, params: { room_code: 'FOUND' }
+
+      expect(response.status).to eq(200)
+
+      expect(parse_response_attributes['room_code']).to eq('FOUND')
+      expect(parse_response_attributes['player_count']).to eq(3)
+    end
+
+    it 'should find the game by room code regardless of case' do
+      game = create(:game, room_code: 'FOUND')
+
+      get :search, params: { room_code: 'found' }
 
       expect(response.status).to eq(200)
 
