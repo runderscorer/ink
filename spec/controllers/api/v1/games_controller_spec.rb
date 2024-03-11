@@ -25,4 +25,29 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       expect(parse_response['errors']).to eq(['Room code has already been taken'])
     end
   end
+
+  describe '#search' do
+    it 'should return an error if the room code is not provided' do
+      get :search
+
+      expect(response.status).to eq(200)
+      expect(parse_response['errors']).to eq('Enter a room code.')
+    end
+
+    it 'should return an error if a game cannot be found by room code' do
+      get :search, params: { room_code: 'NOTFOUND' }
+
+      expect(response.status).to eq(404)
+      expect(parse_response['errors']).to eq('Game not found. Please try another room code.')
+    end
+
+    it 'should return a game if one is found by room code' do
+      game = create(:game, room_code: 'FOUND')
+
+      get :search, params: { room_code: 'FOUND' }
+
+      expect(response.status).to eq(200)
+      expect(parse_response['game']['room_code']).to eq('FOUND')
+    end
+  end
 end
