@@ -25,4 +25,26 @@ RSpec.describe Api::V1::PlayersController, type: :controller do
       expect(parse_response['errors']).to eq('Game not found. Please try another room code.')
     end
   end
+
+  describe '#update' do
+    before do
+      @game = create(:game, room_code: 'PIZZA')
+    end
+
+    it 'should update a player name' do
+      player = create(:player, name: 'Mario', game: @game)
+      put :update, params: { id: player.id, name: 'Luigi' }
+
+      expect(response.status).to eq(200)
+      expect(parse_response_attributes['name']).to eq('Luigi')
+    end
+
+    it 'should return an error message if the player is not valid' do
+      player = create(:player, name: 'Mario', game: @game)
+      put :update, params: { id: player.id, name: nil }
+
+      expect(response.status).to eq(400)
+      expect(parse_response['errors']).to eq(["Name can't be blank"])
+    end
+  end
 end
