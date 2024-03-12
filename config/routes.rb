@@ -12,6 +12,8 @@ Rails.application.routes.draw do
           get :search
         end
       end
+
+      resources :players, only: [:create]
     end
   end
 end

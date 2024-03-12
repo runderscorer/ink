@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe Player, type: :model do
   context 'validations' do
     it 'should validate the presence of a name' do
-      player = build(:player, name: nil)
+      game = create(:game, room_code: 'PIZZA')
+      player = build(:player, name: nil, game: game)
       player.save
 
       expect(player.errors.full_messages.last).to eq("Name can't be blank")
