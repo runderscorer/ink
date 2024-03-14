@@ -21,6 +21,6 @@ class Api::V1::PlayersController < ApplicationController
   private
 
   def player_attributes
-    params.permit(:name, :room_code)
+    params.require(:player).permit(:name, :room_code)
   end
 end
