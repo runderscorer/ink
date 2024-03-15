@@ -13,7 +13,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :players, only: [:create, :update]
+      resources :players, only: [:create, :update, :destroy]
     end
   end
 end
