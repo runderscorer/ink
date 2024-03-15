@@ -6,6 +6,12 @@ class Api::V1::PlayersController < ApplicationController
 
     render json: { errors: player.errors.full_messages }, status: 400 and return unless player.valid?
 
+    ActionCable.server.broadcast(@game.room_code, { 
+      type: 'PLAYER_JOINED', 
+      game: GameSerializer.new(@game),
+      player: PlayerSerializer.new(player)
+    })
+
     render json: PlayerSerializer.new(player), status: :ok
   end
 
