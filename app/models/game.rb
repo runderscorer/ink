@@ -4,7 +4,9 @@ class Game < ApplicationRecord
 
   before_save :normalize_room_code
 
-  has_many :players
+  has_many :players, dependent: :destroy
+  has_one :game_host, dependent: :destroy
+  has_one :host, through: :game_host, source: :player
 
   private
 
