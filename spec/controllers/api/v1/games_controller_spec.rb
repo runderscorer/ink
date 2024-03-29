@@ -62,7 +62,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       expect(response.status).to eq(200)
 
       expect(parse_response_attributes['room_code']).to eq('FOUND')
-      expect(parse_response_attributes['player_count']).to eq(3)
+      expect(parse_response_attributes['player_names'].count).to eq(3)
     end
 
     it 'should find the game by room code regardless of case' do

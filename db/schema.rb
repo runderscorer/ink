@@ -10,18 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_15_232938) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_29_224440) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "game_hosts", force: :cascade do |t|
-    t.bigint "game_id", null: false
-    t.bigint "player_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["game_id"], name: "index_game_hosts_on_game_id"
-    t.index ["player_id"], name: "index_game_hosts_on_player_id"
-  end
 
   create_table "games", force: :cascade do |t|
     t.string "room_code", null: false
@@ -34,6 +25,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_15_232938) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "host", default: false
     t.index ["game_id"], name: "index_players_on_game_id"
   end
 
@@ -66,6 +58,4 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_15_232938) do
     t.index ["submission_id"], name: "index_votes_on_submission_id"
   end
 
-  add_foreign_key "game_hosts", "games", on_delete: :cascade
-  add_foreign_key "game_hosts", "players"
 end

@@ -7,7 +7,7 @@ class Api::V1::GamesController < ApplicationController
 
     render json: { errors: @game.errors.full_messages }, status: 400 and return unless @game.valid?
 
-    add_host if params[:host_name]
+    set_host if params[:host_name]
 
     render json: GameSerializer.new(@game), status: :ok
   end
@@ -22,8 +22,7 @@ class Api::V1::GamesController < ApplicationController
     params.permit(:room_code)
   end
 
-  def add_host
-    player = Player.create(name: params[:host_name], game_id: @game.id)
-    GameHost.create!(game_id: @game.id, player_id: player.id)
+  def set_host
+    Player.create(name: params[:host_name], game_id: @game.id, host: true)
   end
 end
