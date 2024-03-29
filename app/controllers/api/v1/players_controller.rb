@@ -28,6 +28,8 @@ class Api::V1::PlayersController < ApplicationController
 
     render json: { errors: 'Player was not removed.' }, status: :ok and return unless player
 
+    set_new_host(player) if player.host?
+
     player.destroy
 
     ActionCable.server.broadcast(@game.room_code, { 
@@ -42,5 +44,9 @@ class Api::V1::PlayersController < ApplicationController
 
   def player_attributes
     params.require(:player).permit(:name, :room_code)
+  end
+
+  def set_new_host(current_host)
+    @game.assign_new_host(current_host)
   end
 end

@@ -10,6 +10,12 @@ class Game < ApplicationRecord
     players.find_by(host: true)
   end
 
+  def assign_new_host(current_host)
+    return if players.where(host: false).blank?
+
+    players.where.not(id: current_host.id).sample.update(host: true)
+  end
+
   private
 
   def normalize_room_code
