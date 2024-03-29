@@ -26,6 +26,16 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       expect(response.status).to eq(400)
       expect(parse_response['errors']).to eq(['Room code has already been taken'])
     end
+
+    describe 'with host name' do
+      it 'should create a new game with a host' do
+        post :create, params: { room_code: 'SHOWTIME', host_name: 'Beetlejuice' }
+
+        expect(response.status).to eq(200)
+      
+        expect(parse_response_attributes['host']['name']).to eq('Beetlejuice')
+      end
+    end
   end
 
   describe '#search' do

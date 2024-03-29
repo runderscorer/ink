@@ -6,4 +6,8 @@ class GameSerializer
   attribute :player_names do |object|
     object.players.pluck(:name)
   end
+
+  attribute :host do |object|
+    object.host
+  end
 end
