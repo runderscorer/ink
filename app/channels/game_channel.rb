@@ -1,4 +1,6 @@
 class GameChannel < ApplicationCable::Channel
+  attr_accessor :player_id
+
   def subscribed
     room_code = params[:room_code]
     stream_from room_code
@@ -11,7 +13,17 @@ class GameChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    # Any cleanup needed when channel is unsubscribed
+    Player.find_by(id: @player_id)&.destroy
+
+    room_code = params[:room_code]
+    game = Game.find_by(room_code: room_code)
+
+    ActionCable.server.broadcast(room_code, { type: 'PLAYER_LEFT', game: GameSerializer.new(game) })
+
     stop_stream_from params[:room_code]
+  end
+
+  def set_player_id(data)
+    @player_id = data['player_id']
   end
 end

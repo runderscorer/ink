@@ -1,5 +1,5 @@
 class Api::V1::PlayersController < ApplicationController
-  before_action :find_game, only: [:create, :destroy]
+  before_action :find_game, only: [:create]
 
   def create
     player = Player.create(name: player_attributes[:name], game_id: @game.id)
@@ -24,7 +24,10 @@ class Api::V1::PlayersController < ApplicationController
   end
 
   def destroy
-    player = Player.find_by(id: params[:id], game_id: @game.id)
+    player = Player.find_by(id: params[:id])
+    return unless player
+
+    game = player.game
 
     render json: { errors: 'Player was not removed.' }, status: :ok and return unless player
 
@@ -32,9 +35,11 @@ class Api::V1::PlayersController < ApplicationController
 
     player.destroy
 
-    ActionCable.server.broadcast(@game.room_code, { 
+    return unless game
+
+    ActionCable.server.broadcast(game.room_code, { 
       type: 'PLAYER_LEFT', 
-      game: GameSerializer.new(@game)
+      game: GameSerializer.new(game)
     })
 
     render json: { message: 'Player has been removed.' }, status: :ok
