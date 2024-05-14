@@ -11,9 +11,10 @@ class Game < ApplicationRecord
   end
 
   def assign_new_host(current_host)
-    return if players.where(host: false).blank?
+    destroy and return if players.where(host: false).blank?
 
     players.where.not(id: current_host.id).sample.update(host: true)
+    self
   end
 
   private

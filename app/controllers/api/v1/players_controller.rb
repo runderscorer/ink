@@ -27,11 +27,9 @@ class Api::V1::PlayersController < ApplicationController
     player = Player.find_by(id: params[:id])
     return unless player
 
-    game = player.game
-
     render json: { errors: 'Player was not removed.' }, status: :ok and return unless player
 
-    set_new_host(player) if player.host?
+    game = set_new_host(player) if player.host?
 
     player.destroy
 
@@ -52,6 +50,8 @@ class Api::V1::PlayersController < ApplicationController
   end
 
   def set_new_host(current_host)
-    @game.assign_new_host(current_host)
+    game = current_host.game
+
+    game.assign_new_host(current_host)
   end
 end
