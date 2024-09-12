@@ -18,6 +18,8 @@ class GameChannel < ApplicationCable::Channel
     room_code = params[:room_code]
     game = Game.find_by(room_code: room_code)
 
+    game.destroy && return if game.players.blank?
+
     ActionCable.server.broadcast(room_code, { type: 'PLAYER_LEFT', game: GameSerializer.new(game) })
 
     stop_stream_from params[:room_code]
