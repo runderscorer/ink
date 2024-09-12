@@ -1,8 +1,8 @@
 class Game < ApplicationRecord
-  validates_uniqueness_of :room_code
-  validates_presence_of :room_code
+  before_validation :normalize_room_code, if: -> { room_code.present? }
 
-  before_save :normalize_room_code
+  validates_presence_of :room_code
+  validates_uniqueness_of :room_code
 
   has_many :players, dependent: :destroy
 
