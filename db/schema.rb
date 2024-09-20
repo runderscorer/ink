@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_09_20_200528) do
+ActiveRecord::Schema[7.0].define(version: 2024_09_20_201355) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "game_prompts", force: :cascade do |t|
+    t.bigint "game_id", null: false
+    t.bigint "prompt_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id"], name: "index_game_prompts_on_game_id"
+    t.index ["prompt_id"], name: "index_game_prompts_on_prompt_id"
+  end
 
   create_table "games", force: :cascade do |t|
     t.string "room_code", null: false
@@ -58,6 +67,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_20_200528) do
     t.index ["player_id"], name: "index_votes_on_player_id"
   end
 
+  add_foreign_key "game_prompts", "games"
+  add_foreign_key "game_prompts", "prompts"
   add_foreign_key "prompts", "games"
   add_foreign_key "responses", "games"
   add_foreign_key "responses", "players"
