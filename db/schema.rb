@@ -10,20 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_09_19_232232) do
+ActiveRecord::Schema[7.0].define(version: 2024_09_20_200528) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "answers", force: :cascade do |t|
-    t.bigint "game_id", null: false
-    t.bigint "player_id", null: false
-    t.string "text", null: false
-    t.boolean "correct", default: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["game_id"], name: "index_answers_on_game_id"
-    t.index ["player_id"], name: "index_answers_on_player_id"
-  end
 
   create_table "games", force: :cascade do |t|
     t.string "room_code", null: false
@@ -51,7 +40,25 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_19_232232) do
     t.index ["game_id"], name: "index_prompts_on_game_id"
   end
 
-  add_foreign_key "answers", "games"
-  add_foreign_key "answers", "players"
+  create_table "responses", force: :cascade do |t|
+    t.bigint "game_id", null: false
+    t.bigint "player_id", null: false
+    t.string "text", null: false
+    t.boolean "correct", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id"], name: "index_responses_on_game_id"
+    t.index ["player_id"], name: "index_responses_on_player_id"
+  end
+
+  create_table "votes", force: :cascade do |t|
+    t.bigint "player_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["player_id"], name: "index_votes_on_player_id"
+  end
+
   add_foreign_key "prompts", "games"
+  add_foreign_key "responses", "games"
+  add_foreign_key "responses", "players"
 end
