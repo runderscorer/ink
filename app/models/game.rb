@@ -17,6 +17,8 @@ class Game < ApplicationRecord
   validates_uniqueness_of :room_code
 
   has_many :players, dependent: :destroy
+  has_many :game_prompts
+  has_many :prompts, through: :game_prompts
 
   def host
     players.find_by(host: true)

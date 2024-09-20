@@ -19,5 +19,7 @@
 #  fk_rails_...  (prompt_id => prompts.id)
 #
 class GamePrompt < ApplicationRecord
+  belongs_to :game
+  belongs_to :prompt
 end
 
