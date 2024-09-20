@@ -10,14 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_29_224440) do
+ActiveRecord::Schema[7.0].define(version: 2024_09_19_232232) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "answers", force: :cascade do |t|
+    t.bigint "game_id", null: false
+    t.bigint "player_id", null: false
+    t.string "text", null: false
+    t.boolean "correct", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id"], name: "index_answers_on_game_id"
+    t.index ["player_id"], name: "index_answers_on_player_id"
+  end
 
   create_table "games", force: :cascade do |t|
     t.string "room_code", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.integer "winner_id"
   end
 
   create_table "players", force: :cascade do |t|
@@ -29,33 +43,15 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_29_224440) do
     t.index ["game_id"], name: "index_players_on_game_id"
   end
 
-  create_table "rounds", force: :cascade do |t|
-    t.bigint "game_id"
-    t.bigint "player_id"
-    t.text "prompt"
+  create_table "prompts", force: :cascade do |t|
+    t.string "text", null: false
+    t.bigint "game_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["game_id"], name: "index_rounds_on_game_id"
-    t.index ["player_id"], name: "index_rounds_on_player_id"
+    t.index ["game_id"], name: "index_prompts_on_game_id"
   end
 
-  create_table "submissions", force: :cascade do |t|
-    t.bigint "round_id"
-    t.bigint "player_id"
-    t.text "text"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["player_id"], name: "index_submissions_on_player_id"
-    t.index ["round_id"], name: "index_submissions_on_round_id"
-  end
-
-  create_table "votes", force: :cascade do |t|
-    t.bigint "player_id"
-    t.bigint "submission_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["player_id"], name: "index_votes_on_player_id"
-    t.index ["submission_id"], name: "index_votes_on_submission_id"
-  end
-
+  add_foreign_key "answers", "games"
+  add_foreign_key "answers", "players"
+  add_foreign_key "prompts", "games"
 end
