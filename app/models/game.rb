@@ -31,6 +31,16 @@ class Game < ApplicationRecord
     self
   end
 
+  def start!
+    update(started_at: Time.zone.now)
+  end
+
+  def get_prompts!
+    Prompt.all.sample(3).each do |prompt|
+      game_prompts.create(prompt: prompt)
+    end
+  end
+
   private
 
   def normalize_room_code

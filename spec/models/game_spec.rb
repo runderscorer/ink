@@ -35,4 +35,30 @@ RSpec.describe 'Game', type: :model do
 
     expect(game.room_code).to eq('PIZZA')
   end
+
+  context '#start!' do
+    it 'should set the started_at date' do
+      game = create(:game, started_at: nil)
+
+      game.start!
+
+      expect(game.started_at).to be_present
+    end
+  end
+
+  context '#get_prompts!' do
+    before do
+      create_list(:prompt, 9)
+    end
+
+    it 'should assign 3 random prompts to the game' do
+      game = create(:game, room_code: 'ROOMY')
+
+      expect(game.prompts.count).to eq(0)
+
+      game.get_prompts!
+
+      expect(game.prompts.count).to eq(3)
+    end
+  end
 end

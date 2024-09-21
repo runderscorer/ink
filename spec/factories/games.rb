@@ -12,5 +12,6 @@
 #
 FactoryBot.define do
   factory :game do
+    room_code { Faker::App.name }
   end
 end
