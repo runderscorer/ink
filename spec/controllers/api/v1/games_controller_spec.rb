@@ -75,4 +75,21 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       expect(parse_response_attributes['room_code']).to eq('FOUND')
     end
   end
+
+  describe '#start' do
+    before do
+      @game = create(:game)
+      create_list(:player, 3, game: @game)
+      create_list(:prompt, 3)
+    end
+
+    it 'should return a started game if the game has not already started' do
+      patch :start, params: { room_code: @game.room_code }
+
+      expect(response.status).to eq(200)
+
+      expect(parse_response_attributes['started_at']).not_to be_nil
+      expect(parse_response_attributes['prompts'].count).to eq(3)
+    end
+  end
 end

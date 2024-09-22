@@ -13,6 +13,8 @@ Rails.application.routes.draw do
         end
       end
 
+      patch "/games/:room_code/start", to: "games#start"
+
       resources :players, only: [:create, :update, :destroy]
     end
   end

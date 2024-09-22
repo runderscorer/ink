@@ -1,5 +1,5 @@
 class Api::V1::GamesController < ApplicationController
-  before_action :find_game, only: [:search]
+  before_action :find_game, only: [:search, :start]
 
   def create
     room_code = game_attributes[:room_code] || Random.alphanumeric.first(6)
@@ -14,6 +14,11 @@ class Api::V1::GamesController < ApplicationController
 
   def search
     render json: GameSerializer.new(@game), status: :ok
+  end
+
+  def start
+    game = InitializeGame.call(@game)
+    render json: GameSerializer.new(game), status: :ok
   end
 
   private

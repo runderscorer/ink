@@ -46,7 +46,7 @@ RSpec.describe 'Game', type: :model do
     end
   end
 
-  context '#get_prompts!' do
+  context '#assign_prompts!' do
     before do
       create_list(:prompt, 9)
     end
@@ -56,7 +56,7 @@ RSpec.describe 'Game', type: :model do
 
       expect(game.prompts.count).to eq(0)
 
-      game.get_prompts!
+      game.assign_prompts!
 
       expect(game.prompts.count).to eq(3)
     end

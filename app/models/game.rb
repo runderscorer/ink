@@ -35,7 +35,7 @@ class Game < ApplicationRecord
     update(started_at: Time.zone.now)
   end
 
-  def get_prompts!
+  def assign_prompts!
     Prompt.all.sample(3).each do |prompt|
       game_prompts.create(prompt: prompt)
     end

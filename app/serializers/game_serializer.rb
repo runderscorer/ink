@@ -13,13 +13,12 @@
 class GameSerializer
   include JSONAPI::Serializer
 
-  attributes :room_code
+  attributes :room_code, :host, :started_at, :prompts
+
+  has_many :players
+  has_many :prompts
 
   attribute :player_names do |object|
     object.players.pluck(:name)
-  end
-
-  attribute :host do |object|
-    object.host
   end
 end

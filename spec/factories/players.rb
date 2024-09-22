@@ -16,7 +16,7 @@
 #
 FactoryBot.define do
   factory :player do
-    name { 'Mario' }
+    name { Faker::Name.name }
     game
   end
 end

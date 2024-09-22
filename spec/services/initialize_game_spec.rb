@@ -12,10 +12,19 @@ RSpec.describe 'InitializeGame', type: :service do
       InitializeGame.call(@game)
     end
 
-    it 'should call get_prompts on the game' do
-      expect(@game).to receive(:get_prompts!)
+    it 'should call assign_prompts on the game' do
+      expect(@game).to receive(:assign_prompts!)
 
       InitializeGame.call(@game)
+    end
+
+    it 'should not call start on the game if the game has already started' do
+      game = create(:game, started_at: Time.zone.now)
+
+      expect(game).not_to receive(:start!)
+      expect(game).not_to receive(:assign_prompts!)
+
+      InitializeGame.call(game)
     end
   end
 end
