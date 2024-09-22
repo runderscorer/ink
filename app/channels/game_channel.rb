@@ -13,10 +13,13 @@ class GameChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    Player.find_by(id: @player_id)&.destroy
+    player = Player.find_by(id: @player_id)
+    return if player.blank?
 
-    room_code = params[:room_code]
-    game = Game.find_by(room_code: room_code)
+    player.destroy
+
+    game = Game.find_by(room_code: params[:room_code])
+    return if game.blank?
 
     game.destroy && return if game.players.blank?
 
