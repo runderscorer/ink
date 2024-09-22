@@ -7,6 +7,7 @@
 #  text       :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  game_id    :integer
 #  player_id  :bigint
 #  prompt_id  :integer
 #
