@@ -14,7 +14,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Game', type: :model do
-  context 'validations' do
+  describe 'validations' do
     it 'should validate the uniqueness of a room_code' do
       create(:game, room_code: 'TAKEN')
       game = build(:game, room_code: 'taken')
@@ -37,7 +37,7 @@ RSpec.describe 'Game', type: :model do
     expect(game.room_code).to eq('PIZZA')
   end
 
-  context '#start!' do
+  describe '#start!' do
     it 'should set the started_at date and the round' do
       game = create(:game, started_at: nil, round: nil)
 
@@ -48,7 +48,7 @@ RSpec.describe 'Game', type: :model do
     end
   end
 
-  context '#assign_prompts!' do
+  describe '#assign_prompts!' do
     before do
       create_list(:prompt, 9)
     end
@@ -61,6 +61,40 @@ RSpec.describe 'Game', type: :model do
       game.assign_prompts!
 
       expect(game.prompts.count).to eq(3)
+    end
+  end
+
+  describe '#current_prompt' do
+    it 'should return nil if there are no prompts' do
+      game = create(:game, room_code: 'NOPROMPTS')
+
+      expect(game.current_prompt).to be_nil
+    end
+
+    it 'should return nil if round is set to nil' do
+      game = create(:game, room_code: 'NOROUND')
+
+      expect(game.current_prompt).to be_nil
+    end
+
+    it 'should return nil if the round is greater than the number of prompts' do
+      game = create(:game, :with_prompts, room_code: 'PIZZA', round: 100)
+
+      expect(game.current_prompt).to be_nil
+    end
+
+    it 'should return the prompt for the current round' do
+      game = create(:game, :with_prompts, room_code: 'PIZZA', round: 1)
+
+      expect(game.current_prompt).to eq(game.prompts[0])
+
+      game.update(round: 2)
+
+      expect(game.current_prompt).to eq(game.prompts[1])
+
+      game.update(round: 3)
+
+      expect(game.current_prompt).to eq(game.prompts[2])
     end
   end
 end

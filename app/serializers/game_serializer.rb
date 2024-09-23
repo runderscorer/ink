@@ -5,7 +5,6 @@
 #  id         :bigint           not null, primary key
 #  ended_at   :datetime
 #  room_code  :string           not null
-#  round      :integer
 #  started_at :datetime
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -14,12 +13,20 @@
 class GameSerializer
   include JSONAPI::Serializer
 
-  attributes :room_code, :host, :started_at, :prompts
+  attributes :room_code, :host, :started_at, :current_prompt
 
   has_many :players
   has_many :prompts
 
   attribute :player_names do |object|
     object.players.pluck(:name)
+  end
+
+  attribute :current_prompt, if: Proc.new { |record| record.current_prompt.present? } do |object|
+    { 
+      id: object.current_prompt.id, 
+      text: object.current_prompt.text, 
+      author: object.current_prompt.author 
+    }
   end
 end

@@ -15,4 +15,14 @@ FactoryBot.define do
   factory :game do
     room_code { Faker::App.name }
   end
+
+  trait :with_prompts do
+    started_at { Time.zone.now }
+
+    after(:create) do |game|
+      create_list(:prompt, 3).each do |prompt|
+        create(:game_prompt, game: game, prompt: prompt)
+      end
+    end
+  end
 end

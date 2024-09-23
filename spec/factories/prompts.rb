@@ -10,7 +10,8 @@
 #
 FactoryBot.define do
   factory :prompt do
-    text { Faker::Fantasy::Tolkien.poem }
+    text   { Faker::Fantasy::Tolkien.poem }
+    author { Faker::Fantasy::Tolkien.character }
 
     after(:create) do |prompt|
       create(:response, prompt: prompt)

@@ -42,6 +42,12 @@ class Game < ApplicationRecord
     end
   end
 
+  def current_prompt
+    return if prompts.blank? || round.nil? || round > prompts.count
+
+    prompts[round - 1]
+  end
+
   private
 
   def normalize_room_code
