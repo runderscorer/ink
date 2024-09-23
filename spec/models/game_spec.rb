@@ -5,6 +5,7 @@
 #  id         :bigint           not null, primary key
 #  ended_at   :datetime
 #  room_code  :string           not null
+#  round      :integer
 #  started_at :datetime
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -37,12 +38,13 @@ RSpec.describe 'Game', type: :model do
   end
 
   context '#start!' do
-    it 'should set the started_at date' do
-      game = create(:game, started_at: nil)
+    it 'should set the started_at date and the round' do
+      game = create(:game, started_at: nil, round: nil)
 
       game.start!
 
       expect(game.started_at).to be_present
+      expect(game.round).to eq(1)
     end
   end
 

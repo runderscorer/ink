@@ -9,16 +9,17 @@ class Api::V1::GamesController < ApplicationController
 
     set_host if params[:host_name]
 
-    render json: GameSerializer.new(@game), status: :ok
+    render json: GameSerializer.new(@game).serializable_hash, status: :ok
   end
 
   def search
-    render json: GameSerializer.new(@game), status: :ok
+    render json: GameSerializer.new(@game).serializable_hash, status: :ok
   end
 
   def start
     game = InitializeGame.call(@game)
-    render json: GameSerializer.new(game), status: :ok
+
+    render json: GameSerializer.new(game).serializable_hash, status: :ok
   end
 
   private

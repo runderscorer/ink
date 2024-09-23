@@ -5,6 +5,7 @@
 #  id         :bigint           not null, primary key
 #  ended_at   :datetime
 #  room_code  :string           not null
+#  round      :integer
 #  started_at :datetime
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -32,7 +33,7 @@ class Game < ApplicationRecord
   end
 
   def start!
-    update(started_at: Time.zone.now)
+    update(started_at: Time.zone.now, round: 1)
   end
 
   def assign_prompts!
