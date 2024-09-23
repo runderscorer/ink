@@ -17,9 +17,13 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def start
-    game = InitializeGame.call(@game)
+    result = InitializeGame.call(game: @game)
 
-    render json: GameSerializer.new(game).serializable_hash, status: :ok
+    if result.success?
+      render json: GameSerializer.new(result.game).serializable_hash, status: :ok
+    else
+      render json: { error_message: result.error_message }, status: 400
+    end
   end
 
   private

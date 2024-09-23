@@ -13,7 +13,7 @@
 class GameSerializer
   include JSONAPI::Serializer
 
-  attributes :room_code, :host, :started_at, :current_prompt
+  attributes :room_code, :host, :started_at, :current_prompt, :round
 
   has_many :players
   has_many :prompts

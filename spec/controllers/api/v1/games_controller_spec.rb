@@ -89,7 +89,19 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       expect(response.status).to eq(200)
 
       expect(parse_response_attributes['started_at']).not_to be_nil
-      expect(parse_response_attributes['prompts'].count).to eq(3)
+      expect(parse_response_attributes['round']).to eq(1)
+      expect(parse_response_attributes['current_prompt']).not_to be_nil
+      expect(parse_response_attributes['current_prompt']['text']).not_to be_nil
+      expect(parse_response_attributes['current_prompt']['author']).not_to be_nil
+    end
+
+    it 'should return an error message if an error occurs' do
+      allow_any_instance_of(Game).to receive(:assign_prompts!).and_raise(StandardError.new('An error occurred'))
+
+      patch :start, params: { room_code: @game.room_code }
+
+      expect(response.status).to eq(400)
+      expect(parse_response['error_message']).to eq('An error occurred')
     end
   end
 end

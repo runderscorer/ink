@@ -5,7 +5,7 @@ RSpec.describe GameSerializer do
     game = create(:game)
     create_list(:prompt, 9)
     create_list(:player, 3, game: game)
-    InitializeGame.call(game)
+    InitializeGame.call(game: game)
 
     @game = GameSerializer.new(game).serializable_hash
   end
