@@ -18,6 +18,7 @@ FactoryBot.define do
 
   trait :with_prompts do
     started_at { Time.zone.now }
+    round      { 1 }
 
     after(:create) do |game|
       create_list(:prompt, 3).each do |prompt|
