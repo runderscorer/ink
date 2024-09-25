@@ -14,14 +14,17 @@ RSpec.describe Api::V1::ResponsesController, type: :controller do
 
       expect(@game.current_prompt.responses.count).to eq(2)
       expect(@game.current_prompt.responses.pluck(:text)).to include('more pineapple please')
-      
-      response = parse_response['response']['data']['attributes']
+    end
 
-      expect(response['player_id']).to eq(@player.id)
-      expect(response['correct']).to eq(false)
-      expect(response['text']).to eq('more pineapple please')
-      expect(response['prompt_id']).to eq(@game.current_prompt.id)
-      expect(response['game_id']).to eq(@game.id)
+    it 'should broadcast a message with a game' do
+      response_params = { text: 'more pineapple please', player_id: @player.id, room_code: @game.room_code }
+
+      expect {
+        post :create, params: response_params
+      }.to have_broadcasted_to(@game.room_code).with(
+        type: 'NEW_RESPONSE',
+        game: anything
+      )
     end
   end
 end

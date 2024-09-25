@@ -7,9 +7,11 @@ class Api::V1::VotesController < ApplicationController
       player_id: params[:player_id]
     )
 
-    render json: { 
-      vote: VoteSerializer.new(vote).serializable_hash, 
-      game: GameSerializer.new(@game).serializable_hash 
-    }, status: :ok
+    ActionCable.server.broadcast(@game.room_code, {
+      type: 'NEW_VOTE',
+      game: GameSerializer.new(@game).serializable_hash
+    })
+
+    render status: :ok
   end
 end

@@ -17,15 +17,17 @@ RSpec.describe Api::V1::VotesController, type: :controller do
       post :create, params: { response_id: @prompt_response.id, player_id: @player.id, room_code: @game.room_code }
 
       expect(@prompt_response.votes.count).to eq(1)
-      
-      vote = parse_response['vote']['data']['attributes']
-      game = parse_response['game']['data']['attributes']
-      current_prompt = game['current_prompt']
-      response = current_prompt['responses']['data'][0]['attributes']
+    end
 
-      expect(vote['player_id']).to eq(@player.id)
-      expect(vote['response_id']).to eq(@prompt_response.id)
-      expect(response['votes'].pluck('id')).to include(vote['id'])
+    it 'should broadcast a message with a game' do
+      vote_params = { response_id: @prompt_response.id, player_id: @player.id, room_code: @game.room_code }
+      
+      expect {
+        post :create, params: vote_params
+      }.to have_broadcasted_to(@game.room_code).with(
+        type: 'NEW_VOTE',
+        game: anything
+      )
     end
   end
 end

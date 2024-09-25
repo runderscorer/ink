@@ -8,10 +8,10 @@ class Api::V1::PlayersController < ApplicationController
 
     ActionCable.server.broadcast(@game.room_code, { 
       type: 'PLAYER_JOINED', 
-      game: GameSerializer.new(@game)
+      game: GameSerializer.new(@game).serializable_hash
     })
 
-    render json: PlayerSerializer.new(player), status: :ok
+    render json: PlayerSerializer.new(player).serializable_hash, status: :ok
   end
 
   def update
@@ -20,7 +20,7 @@ class Api::V1::PlayersController < ApplicationController
 
     render json: { errors: player.errors.full_messages }, status: 400 and return unless player.valid?
 
-    render json: PlayerSerializer.new(player), status: :ok
+    render json: PlayerSerializer.new(player).serializable_hash, status: :ok
   end
 
   def destroy
@@ -37,7 +37,7 @@ class Api::V1::PlayersController < ApplicationController
 
     ActionCable.server.broadcast(game.room_code, { 
       type: 'PLAYER_LEFT', 
-      game: GameSerializer.new(game)
+      game: GameSerializer.new(game).serializable_hash
     })
 
     render json: { message: 'Player has been removed.' }, status: :ok

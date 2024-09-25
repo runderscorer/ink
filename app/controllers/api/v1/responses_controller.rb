@@ -11,10 +11,12 @@ class Api::V1::ResponsesController < ApplicationController
         text: params[:text]
       )
 
-      render json: { 
-        response: ResponseSerializer.new(response).serializable_hash, 
-        game: GameSerializer.new(@game).serializable_hash 
-      }, status: :ok
+      ActionCable.server.broadcast(@game.room_code, {
+        type: 'NEW_RESPONSE',
+        game: GameSerializer.new(@game).serializable_hash
+      })
+
+      render status: :ok
     end
   end
 end
