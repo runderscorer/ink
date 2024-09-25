@@ -25,5 +25,6 @@ class Response < ApplicationRecord
   belongs_to :player
   has_many :votes
 
-  scope :by_game, ->(room_code) { where(game_id: Game.find_by(room_code: room_code).id) }
+  scope :correct, -> { where(correct: true) }
+  scope :by_game, ->(room_code) { where(game_id: Game.find_by(room_code: room_code).id).or(correct) }
 end
