@@ -20,7 +20,9 @@ class Api::V1::GamesController < ApplicationController
     result = InitializeGame.call(game: @game)
 
     if result.success?
-      render json: GameSerializer.new(result.game).serializable_hash, status: :ok
+      broadcast_start_game
+
+      render status: :ok
     else
       render json: { error_message: result.error_message }, status: 400
     end
@@ -34,5 +36,12 @@ class Api::V1::GamesController < ApplicationController
 
   def set_host
     Player.create(name: params[:host_name], game_id: @game.id, host: true)
+  end
+
+  def broadcast_start_game
+    ActionCable.server.broadcast(@game.room_code, {
+      type: 'GAME_STARTED',
+      game: GameSerializer.new(@game).serializable_hash
+    })
   end
 end
