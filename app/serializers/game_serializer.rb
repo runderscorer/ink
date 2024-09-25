@@ -29,7 +29,8 @@ class GameSerializer
       id: object.current_prompt.id, 
       text: object.current_prompt.text, 
       author: object.current_prompt.author,
-      responses: ResponseSerializer.new(object.current_prompt.responses.by_game(object.room_code))
+      responses: ResponseSerializer.new(object.current_prompt.responses.by_game(object.room_code)),
+      votes: VoteSerializer.new(object.current_prompt.votes.by_game(object.room_code))
     }
   end
 end

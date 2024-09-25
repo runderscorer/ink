@@ -8,7 +8,7 @@ class GameChannel < ApplicationCable::Channel
     game = Game.find_by(room_code: room_code)
 
     if game
-      ActionCable.server.broadcast(room_code, { type: 'GAME_FOUND', game: GameSerializer.new(game) })
+      ActionCable.server.broadcast(room_code, { type: 'GAME_FOUND', game: GameSerializer.new(game).serializable_hash })
     end
   end
 
@@ -23,7 +23,7 @@ class GameChannel < ApplicationCable::Channel
 
     game.destroy && return if game.players.blank?
 
-    ActionCable.server.broadcast(room_code, { type: 'PLAYER_LEFT', game: GameSerializer.new(game) })
+    ActionCable.server.broadcast(room_code, { type: 'PLAYER_LEFT', game: GameSerializer.new(game).serializable_hash })
 
     stop_stream_from params[:room_code]
   end

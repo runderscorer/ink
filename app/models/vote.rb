@@ -15,4 +15,6 @@
 class Vote < ApplicationRecord
   belongs_to :player
   belongs_to :response
+
+  scope :by_game, ->(room_code) { where(player_id: Player.by_game(room_code).pluck(:id)) }
 end

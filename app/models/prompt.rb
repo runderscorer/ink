@@ -12,4 +12,5 @@ class Prompt < ApplicationRecord
   has_many :game_prompts
   has_many :games, through: :game_prompts, dependent: :destroy
   has_many :responses
+  has_many :votes, through: :responses
 end
