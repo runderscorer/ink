@@ -7,6 +7,7 @@
 #  room_code  :string           not null
 #  round      :integer
 #  started_at :datetime
+#  status     :integer          default(0)
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  winner_id  :integer
@@ -21,6 +22,12 @@ class Game < ApplicationRecord
   has_many :game_prompts, dependent: :destroy
   has_many :prompts, through: :game_prompts
 
+  enum status: { 
+    waiting: 0, 
+    gathering_responses: 1, 
+    gathering_votes: 2 
+  }
+
   def host
     players.find_by(host: true)
   end
@@ -33,7 +40,11 @@ class Game < ApplicationRecord
   end
 
   def start!
-    update(started_at: Time.zone.now, round: 1)
+    update(
+      started_at: Time.zone.now, 
+      round: 1,
+      status: :gathering_responses
+    )
   end
 
   def assign_prompts!

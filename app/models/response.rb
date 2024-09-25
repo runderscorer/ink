@@ -20,9 +20,9 @@
 #  fk_rails_...  (player_id => players.id)
 #
 class Response < ApplicationRecord
-  belongs_to :game
+  belongs_to :game, optional: true
+  belongs_to :player, optional: true
   belongs_to :prompt
-  belongs_to :player
   has_many :votes
 
   scope :correct, -> { where(correct: true) }

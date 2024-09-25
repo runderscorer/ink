@@ -5,7 +5,9 @@
 #  id         :bigint           not null, primary key
 #  ended_at   :datetime
 #  room_code  :string           not null
+#  round      :integer
 #  started_at :datetime
+#  status     :integer          default(0)
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  winner_id  :integer

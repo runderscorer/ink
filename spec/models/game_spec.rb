@@ -7,6 +7,7 @@
 #  room_code  :string           not null
 #  round      :integer
 #  started_at :datetime
+#  status     :integer          default(0)
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  winner_id  :integer
@@ -38,13 +39,14 @@ RSpec.describe 'Game', type: :model do
   end
 
   describe '#start!' do
-    it 'should set the started_at date and the round' do
-      game = create(:game, started_at: nil, round: nil)
+    it 'should set the started_at date, round, and status' do
+      game = create(:game, started_at: nil, round: nil, status: Game.statuses[:waiting])
 
       game.start!
 
       expect(game.started_at).to be_present
       expect(game.round).to eq(1)
+      expect(game.status).to eq('gathering_responses')
     end
   end
 
@@ -95,6 +97,32 @@ RSpec.describe 'Game', type: :model do
       game.update(round: 3)
 
       expect(game.current_prompt).to eq(game.prompts[2])
+    end
+  end
+
+  context 'statuses' do
+    before do
+      @game = create(:game)
+    end
+
+    describe 'gathering_responses' do
+      it 'should update the status to gathering_responses' do
+        expect(@game.status).to eq('waiting') 
+
+        @game.gathering_responses!
+
+        expect(@game.status).to eq('gathering_responses')
+      end
+    end
+
+    describe 'gathering_votes' do
+      it 'should update the status to gathering_votes' do
+        expect(@game.status).to eq('waiting') 
+
+        @game.gathering_votes!
+
+        expect(@game.status).to eq('gathering_votes')
+      end
     end
   end
 end

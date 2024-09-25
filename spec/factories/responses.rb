@@ -23,5 +23,9 @@ FactoryBot.define do
   factory :response do
     text { Faker::Fantasy::Tolkien.poem }
     prompt
+
+    trait :correct do
+      correct   { true }
+    end
   end
 end
