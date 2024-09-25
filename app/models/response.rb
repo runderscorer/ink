@@ -20,5 +20,10 @@
 #  fk_rails_...  (player_id => players.id)
 #
 class Response < ApplicationRecord
+  belongs_to :game
   belongs_to :prompt
+  belongs_to :player
+  has_many :votes
+
+  scope :by_game, ->(room_code) { where(game_id: Game.find_by(room_code: room_code).id) }
 end

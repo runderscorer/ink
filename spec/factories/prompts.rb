@@ -14,7 +14,9 @@ FactoryBot.define do
     author { Faker::Fantasy::Tolkien.character }
 
     after(:create) do |prompt|
-      create(:response, prompt: prompt)
+      game = create(:game)
+      player = create(:player, game: game)
+      create(:response, prompt: prompt, game: game, player: player)
     end
   end
 end

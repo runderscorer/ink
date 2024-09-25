@@ -11,7 +11,10 @@ class Api::V1::ResponsesController < ApplicationController
         text: params[:text]
       )
 
-      render json: response, status: :ok
+      render json: { 
+        response: ResponseSerializer.new(response).serializable_hash, 
+        game: GameSerializer.new(@game).serializable_hash 
+      }, status: :ok
     end
   end
 end

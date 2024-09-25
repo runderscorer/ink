@@ -15,7 +15,7 @@ RSpec.describe Api::V1::ResponsesController, type: :controller do
       expect(@game.current_prompt.responses.count).to eq(2)
       expect(@game.current_prompt.responses.pluck(:text)).to include('more pineapple please')
       
-      response = parse_response
+      response = parse_response['response']['data']['attributes']
 
       expect(response['player_id']).to eq(@player.id)
       expect(response['correct']).to eq(false)
