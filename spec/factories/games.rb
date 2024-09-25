@@ -29,4 +29,12 @@ FactoryBot.define do
       end
     end
   end
+
+  trait :gathering_responses do
+    status { :gathering_responses}
+  end
+
+  trait :gathering_votes do
+    status { :gathering_votes}
+  end
 end

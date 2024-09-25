@@ -39,5 +39,24 @@ RSpec.describe GameSerializer do
         expect(@game[:data][:attributes][:current_prompt][:author]).to be_present
       end
     end
+
+    describe 'status' do
+      it 'should return the status name' do
+        game = create(:game)
+        game = GameSerializer.new(game).serializable_hash
+
+        expect(game[:data][:attributes][:status]).to eq('waiting')
+
+        game = create(:game, :gathering_responses)
+        game = GameSerializer.new(game).serializable_hash
+
+        expect(game[:data][:attributes][:status]).to eq('gathering_responses')
+
+        game = create(:game, :gathering_votes)
+        game = GameSerializer.new(game).serializable_hash
+
+        expect(game[:data][:attributes][:status]).to eq('gathering_votes')
+      end
+    end
   end
 end
