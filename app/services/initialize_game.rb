@@ -1,5 +1,6 @@
 class InitializeGame < BaseService
   def call
+    return fail!('Game not found') if game.blank?
     return fail!('Game already started') if game.started_at.present?
 
     initialize_game

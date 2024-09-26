@@ -6,6 +6,13 @@ RSpec.describe 'InitializeGame', type: :service do
       @game = create(:game)
     end
 
+    it 'should return an error message if the game is not found' do
+      result = InitializeGame.call(game: nil)
+
+      expect(result.success?).to be false
+      expect(result.error_message).to eq('Game not found')
+    end
+
     it 'should call start on the game' do
       expect(@game).to receive(:start!)
 

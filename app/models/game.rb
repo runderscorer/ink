@@ -13,6 +13,8 @@
 #  winner_id  :integer
 #
 class Game < ApplicationRecord
+  DEFAULT_ROUNDS = 3
+
   before_validation :normalize_room_code, if: -> { room_code.present? }
 
   validates_presence_of :room_code
@@ -25,7 +27,8 @@ class Game < ApplicationRecord
   enum status: { 
     waiting: 0, 
     gathering_responses: 1, 
-    gathering_votes: 2 
+    gathering_votes: 2,
+    viewing_scores: 3
   }
 
   def host
@@ -48,7 +51,7 @@ class Game < ApplicationRecord
   end
 
   def assign_prompts!
-    Prompt.all.sample(3).each do |prompt|
+    Prompt.all.sample(DEFAULT_ROUNDS).each do |prompt|
       game_prompts.create(prompt: prompt)
     end
   end
