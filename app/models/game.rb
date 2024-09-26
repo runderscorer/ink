@@ -13,7 +13,7 @@
 #  winner_id  :integer
 #
 class Game < ApplicationRecord
-  DEFAULT_ROUNDS = 3
+  MAX_ROUNDS = 3
 
   before_validation :normalize_room_code, if: -> { room_code.present? }
 
@@ -51,7 +51,7 @@ class Game < ApplicationRecord
   end
 
   def assign_prompts!
-    Prompt.all.sample(DEFAULT_ROUNDS).each do |prompt|
+    Prompt.all.sample(MAX_ROUNDS).each do |prompt|
       game_prompts.create(prompt: prompt)
     end
   end

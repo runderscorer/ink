@@ -32,9 +32,10 @@ class BaseService
 
   def set_attributes
     @args.each do |arg| 
-      key = arg.keys.last
-      class_eval { attr_accessor key }
-      instance_variable_set("@#{key}", arg[key])
+      arg.keys.each do |key|
+        class_eval { attr_accessor key }
+        instance_variable_set("@#{key}", arg[key])
+      end
     end
   end
 end

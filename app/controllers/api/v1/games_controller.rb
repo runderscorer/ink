@@ -1,5 +1,5 @@
 class Api::V1::GamesController < ApplicationController
-  before_action :find_game, only: [:search, :start]
+  before_action :find_game, only: [:search, :start, :next_round]
 
   def create
     room_code = game_attributes[:room_code] || Random.alphanumeric.first(6)
@@ -22,6 +22,17 @@ class Api::V1::GamesController < ApplicationController
     if result.success?
       broadcast_start_game
 
+      render status: :ok
+    else
+      render json: { error_message: result.error_message }, status: 400
+    end
+  end
+
+  def next_round
+    player = Player.find_by(id: params[:player_id])
+    result = AdvanceRound.call(game: @game, player: player)
+
+    if result.success?
       render status: :ok
     else
       render json: { error_message: result.error_message }, status: 400

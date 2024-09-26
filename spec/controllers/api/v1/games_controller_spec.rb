@@ -83,16 +83,16 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       create_list(:prompt, 3)
     end
 
-    it 'should return a started game if the game has not already started' do
-      patch :start, params: { room_code: @game.room_code }
+    it 'should broadcast a message with a game' do
+      expect {
+        patch :start, params: { room_code: @game.room_code }
+      }.to have_broadcasted_to(@game.room_code).with(
+        type: 'GAME_STARTED',
+        game: anything
+      )
 
       expect(response.status).to eq(200)
-
-      expect(parse_response_attributes['started_at']).not_to be_nil
-      expect(parse_response_attributes['round']).to eq(1)
-      expect(parse_response_attributes['current_prompt']).not_to be_nil
-      expect(parse_response_attributes['current_prompt']['text']).not_to be_nil
-      expect(parse_response_attributes['current_prompt']['author']).not_to be_nil
+      expect(@game.reload.started_at).to be_present
     end
 
     it 'should return an error message if an error occurs' do
@@ -102,6 +102,25 @@ RSpec.describe Api::V1::GamesController, type: :controller do
 
       expect(response.status).to eq(400)
       expect(parse_response['error_message']).to eq('An error occurred')
+    end
+  end
+
+  describe '#next_round' do
+    it 'should call the AdvanceRound service' do
+      game = create(:game)
+      player = create(:player, game: game)
+
+      expect(AdvanceRound).to receive(:call).with(game: game, player: player).and_call_original
+
+      patch :next_round, params: { room_code: game.room_code, player_id: player.id }
+    end
+
+    it 'should return an error message if an error occurs' do
+      game = create(:game, :with_prompts)
+
+      patch :next_round, params: { room_code: game.room_code, player_id: nil }
+
+      expect(parse_response['error_message']).to eq('Host not found')
     end
   end
 end

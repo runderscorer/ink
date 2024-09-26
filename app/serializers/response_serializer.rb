@@ -22,8 +22,16 @@
 class ResponseSerializer
   include JSONAPI::Serializer
 
-  attributes :id, :text, :prompt_id, :game_id, :correct, :player_id, :votes
+  attributes :id, :text, :prompt_id, :game_id, :correct, :player_id, :votes, :player_name
 
   belongs_to :player
   has_many :votes
+
+  attribute :player_name do |object|
+    "#{object.player ? object.player.name : object.prompt.author}"
+  end
+
+  attribute :votes do |object|
+    VoteSerializer.new(object.votes).serializable_hash
+  end
 end

@@ -20,6 +20,10 @@ class GameSerializer
   has_many :players
   has_many :prompts
 
+  attribute :players do |object|
+    PlayerSerializer.new(object.players).serializable_hash
+  end
+
   attribute :player_names do |object|
     object.players.pluck(:name)
   end
@@ -29,8 +33,8 @@ class GameSerializer
       id: object.current_prompt.id, 
       text: object.current_prompt.text, 
       author: object.current_prompt.author,
-      responses: ResponseSerializer.new(object.current_prompt.responses.by_game(object.room_code)),
-      votes: VoteSerializer.new(object.current_prompt.votes.by_game(object.room_code))
+      responses: ResponseSerializer.new(object.current_prompt.responses.by_game(object.room_code)).serializable_hash,
+      votes: VoteSerializer.new(object.current_prompt.votes.by_game(object.room_code)).serializable_hash
     }
   end
 end

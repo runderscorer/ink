@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       end
 
       patch "/games/:room_code/start", to: "games#start"
+      patch "/games/:room_code/next_round", to: "games#next_round"
 
       resources :players, only: [:create, :update, :destroy]
       resources :responses, only: [:create]

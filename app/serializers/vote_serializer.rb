@@ -15,8 +15,12 @@
 class VoteSerializer
   include JSONAPI::Serializer
 
-  attributes :id, :player_id, :response_id
+  attributes :id, :player_id, :response_id, :player_name
 
   belongs_to :player
   belongs_to :response
+
+  attribute :player_name do |object|
+    object.player.name
+  end
 end
