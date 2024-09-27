@@ -15,20 +15,41 @@
 require 'rails_helper'
 
 RSpec.describe 'Game', type: :model do
-  describe 'validations' do
-    it 'should validate the uniqueness of a room_code' do
-      create(:game, room_code: 'TAKEN')
-      game = build(:game, room_code: 'taken')
-      game.save
+  context 'validations' do
+    describe 'room_code' do
+      it 'should validate the uniqueness of a room_code' do
+        create(:game, room_code: 'TAKEN')
+        game = build(:game, room_code: 'taken')
+        game.save
 
-      expect(game.errors.full_messages.last).to eq('Room code has already been taken')
-    end
+        expect(game.errors.full_messages.last).to eq('Room code has already been taken')
+      end
 
-    it 'should validate the presence of a room_code' do
-      game = build(:game, room_code: nil)
-      game.save
+      it 'should validate the presence of a room_code' do
+        game = build(:game, room_code: nil)
+        game.save
 
-      expect(game.errors.full_messages.last).to eq("Room code can't be blank")
+        expect(game.errors.full_messages.last).to eq("Room code can't be blank")
+      end
+
+      it 'should validate the length of a room_code' do
+        game = build(:game, room_code: 'SH')
+        game.save
+
+        expect(game.errors.full_messages.last).to eq('Room code is too short (minimum is 3 characters)')
+
+        game = build(:game, room_code: 'ROOMCODEISTOOLONG')
+        game.save
+
+        expect(game.errors.full_messages.last).to eq('Room code is too long (maximum is 10 characters)')
+      end
+
+      it 'should validate the format of a room_code' do
+        game = build(:game, room_code: '#ROOM!CODE')
+        game.save
+
+        expect(game.errors.full_messages.last).to eq('Room code must not include special characters')
+      end
     end
   end
 

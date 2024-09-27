@@ -17,7 +17,7 @@ class Game < ApplicationRecord
 
   before_validation :normalize_room_code, if: -> { room_code.present? }
 
-  validates_presence_of :room_code
+  validates :room_code, format: { with: /\A[\w\_]+\z/, message: 'must not include special characters' }, length: { minimum: 3, maximum: 10 }, presence: true
   validates_uniqueness_of :room_code
 
   has_many :players, dependent: :destroy
@@ -66,5 +66,6 @@ class Game < ApplicationRecord
 
   def normalize_room_code
     self.room_code = room_code.upcase
+    self.room_code = room_code.gsub(/\s+/, '')
   end 
 end

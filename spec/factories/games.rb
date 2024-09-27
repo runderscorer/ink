@@ -14,7 +14,7 @@
 #
 FactoryBot.define do
   factory :game do
-    room_code { "#{Faker::App.name}#{1.upto(10).to_a.sample}" }
+    room_code { "#{Faker::Alphanumeric.alphanumeric.first(10)}" }
   end
 
   trait :with_prompts do
