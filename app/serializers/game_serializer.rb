@@ -41,4 +41,10 @@ class GameSerializer
   attribute :max_rounds do |object|
     Game::MAX_ROUNDS
   end
+
+  attribute :winners, if: Proc.new { |record| record.game_over? } do |object|
+    high_score = object.players.pluck(:score).max
+
+    object.players.where(score: high_score) 
+  end
 end

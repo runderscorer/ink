@@ -41,4 +41,8 @@ FactoryBot.define do
   trait :viewing_scores do
     status { :viewing_scores}
   end
+
+  trait :game_over do
+    status { :game_over}
+  end
 end

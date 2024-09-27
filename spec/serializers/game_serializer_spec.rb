@@ -58,5 +58,34 @@ RSpec.describe GameSerializer do
         expect(game[:data][:attributes][:status]).to eq('gathering_votes')
       end
     end
+
+    describe 'winners' do
+      it 'should return the players with the highest score' do
+        game = create(:game, :game_over)
+
+        create(:player, game: game, score: 100)
+        create(:player, game: game, score: 300)
+
+        guile = create(:player, game: game, score: 900)
+        chun_li = create(:player, game: game, score: 900)
+
+        game = GameSerializer.new(game).serializable_hash
+
+        winners = game[:data][:attributes][:winners]
+
+        expect(winners.count).to eq(2)
+        expect(winners.pluck(:id)).to include(guile.id, chun_li.id)
+      end
+
+      describe 'if the game is not over' do
+        it 'should return nil' do
+          game = create(:game, :with_prompts)
+          
+          game = GameSerializer.new(game).serializable_hash
+
+          expect(game[:data][:attributes][:winners]).to be_nil
+        end
+      end
+    end
   end
 end
