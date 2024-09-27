@@ -16,7 +16,7 @@ class Api::V1::ResponsesController < ApplicationController
         game: GameSerializer.new(@game).serializable_hash
       })
 
-      @game.gathering_votes! if all_responses_submitted?
+      handle_all_responses_submitted if all_responses_submitted?
 
       render status: :ok
     end
@@ -25,6 +25,15 @@ class Api::V1::ResponsesController < ApplicationController
   private
 
   def all_responses_submitted?
-    @game.current_prompt.responses.count == @game.players.count + 1
+    @game.current_prompt.responses.by_game(@game.room_code).count == @game.players.count + 1
+  end
+
+  def handle_all_responses_submitted
+    @game.gathering_votes!
+
+    ActionCable.server.broadcast(@game.room_code, {
+      type: 'ALL_RESPONSES_SUBMITTED',
+      game: GameSerializer.new(@game).serializable_hash
+    })
   end
 end

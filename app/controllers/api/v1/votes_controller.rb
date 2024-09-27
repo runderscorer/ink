@@ -28,6 +28,7 @@ class Api::V1::VotesController < ApplicationController
 
     if result.success?
       @game.viewing_scores!
+
       ActionCable.server.broadcast(@game.room_code, {
         type: 'ROUND_OVER',
         game: GameSerializer.new(@game).serializable_hash
