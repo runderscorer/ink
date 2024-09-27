@@ -87,5 +87,34 @@ RSpec.describe GameSerializer do
         end
       end
     end
+
+    describe 'not_winners' do
+      it 'should return the players without the highest score and sort by scores descending' do
+        game = create(:game, :game_over)
+
+        create(:player, game: game, score: 900)
+        create(:player, game: game, score: 900)
+        ken = create(:player, game: game, score: 100)
+        ryu = create(:player, game: game, score: 300)
+
+        game = GameSerializer.new(game).serializable_hash
+
+        not_winners = game[:data][:attributes][:not_winners]
+
+        expect(not_winners.count).to eq(2)
+        expect(not_winners[0][:id]).to be(ryu.id)
+        expect(not_winners[1][:id]).to be(ken.id)
+      end
+
+      describe 'if the game is not over' do
+        it 'should return nil' do
+          game = create(:game, :with_prompts)
+          
+          game = GameSerializer.new(game).serializable_hash
+
+          expect(game[:data][:attributes][:not_winners]).to be_nil
+        end
+      end
+    end
   end
 end

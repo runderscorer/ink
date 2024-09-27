@@ -47,4 +47,10 @@ class GameSerializer
 
     object.players.where(score: high_score) 
   end
+
+  attribute :not_winners, if: Proc.new { |record| record.game_over? } do |object|
+    high_score = object.players.pluck(:score).max
+
+    object.players.where.not(score: high_score).order(score: :desc)
+  end
 end
