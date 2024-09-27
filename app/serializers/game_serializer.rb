@@ -15,7 +15,7 @@
 class GameSerializer
   include JSONAPI::Serializer
 
-  attributes :room_code, :host, :started_at, :current_prompt, :round, :status
+  attributes :room_code, :host, :started_at, :current_prompt, :round, :status, :max_rounds
 
   has_many :players
   has_many :prompts
@@ -36,5 +36,9 @@ class GameSerializer
       responses: ResponseSerializer.new(object.current_prompt.responses.by_game(object.room_code)).serializable_hash,
       votes: VoteSerializer.new(object.current_prompt.votes.by_game(object.room_code)).serializable_hash
     }
+  end
+
+  attribute :max_rounds do |object|
+    Game::MAX_ROUNDS
   end
 end

@@ -121,28 +121,56 @@ RSpec.describe 'Game', type: :model do
     end
   end
 
-  context 'statuses' do
-    before do
-      @game = create(:game)
-    end
-
-    describe 'gathering_responses' do
+  context 'next_status!' do
+    describe 'when waiting' do
       it 'should update the status to gathering_responses' do
-        expect(@game.status).to eq('waiting') 
+        game = create(:game)
 
-        @game.gathering_responses!
+        game.next_status!
 
-        expect(@game.status).to eq('gathering_responses')
+        expect(game.status).to eq('gathering_responses')
       end
     end
 
-    describe 'gathering_votes' do
+    describe 'when gathering_responses' do
       it 'should update the status to gathering_votes' do
-        expect(@game.status).to eq('waiting') 
+        game = create(:game, :gathering_responses)
 
-        @game.gathering_votes!
+        game.next_status!
 
-        expect(@game.status).to eq('gathering_votes')
+        expect(game.status).to eq('gathering_votes')
+      end
+    end
+
+    describe 'when gathering_votes' do
+      it 'should update the status to viewing_scores' do
+        game = create(:game, :with_prompts, :gathering_votes)
+
+        game.next_status!
+
+        expect(game.status).to eq('viewing_scores')
+      end
+    end
+
+    describe 'when viewing_scores' do
+      describe 'and the round is less than the max rounds' do
+        it 'should update the status to gathering_responses' do
+          game = create(:game, :with_prompts, :viewing_scores)
+
+          game.next_status!
+
+          expect(game.status).to eq('gathering_responses')
+        end
+      end
+
+      describe 'and the round is equal to the max rounds' do
+        it 'should update the status to game_over' do
+          game = create(:game, :with_prompts, :viewing_scores, round: Game::MAX_ROUNDS)
+
+          game.next_status!
+
+          expect(game.status).to eq('game_over')
+        end
       end
     end
   end

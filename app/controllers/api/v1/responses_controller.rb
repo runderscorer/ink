@@ -29,7 +29,7 @@ class Api::V1::ResponsesController < ApplicationController
   end
 
   def handle_all_responses_submitted
-    @game.gathering_votes!
+    @game.next_status!
 
     ActionCable.server.broadcast(@game.room_code, {
       type: 'ALL_RESPONSES_SUBMITTED',

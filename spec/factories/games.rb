@@ -37,4 +37,8 @@ FactoryBot.define do
   trait :gathering_votes do
     status { :gathering_votes}
   end
+
+  trait :viewing_scores do
+    status { :viewing_scores}
+  end
 end

@@ -28,7 +28,8 @@ class Game < ApplicationRecord
     waiting: 0, 
     gathering_responses: 1, 
     gathering_votes: 2,
-    viewing_scores: 3
+    viewing_scores: 3,
+    game_over: 4
   }
 
   def host
@@ -60,6 +61,22 @@ class Game < ApplicationRecord
     return if prompts.blank? || round.nil? || round > prompts.count
 
     prompts[round - 1]
+  end
+
+  def next_status!
+    case true
+    when waiting?
+      gathering_responses!
+    when gathering_responses?
+      gathering_votes!
+      update(status: :gathering_votes)
+    when gathering_votes?
+      viewing_scores!
+    when viewing_scores? && round < MAX_ROUNDS
+      gathering_responses!
+    else
+      game_over!
+    end
   end
 
   private

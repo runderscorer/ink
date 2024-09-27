@@ -27,7 +27,7 @@ class Api::V1::VotesController < ApplicationController
     result = CalculateScore.call(game: @game)
 
     if result.success?
-      @game.viewing_scores!
+      @game.next_status!
 
       ActionCable.server.broadcast(@game.room_code, {
         type: 'ROUND_OVER',
