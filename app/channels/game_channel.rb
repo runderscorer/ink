@@ -13,19 +13,15 @@ class GameChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    player = Player.find_by(id: @player_id)
-    return if player.blank?
-
-    player.destroy
+     # TODO: Use background job with timer to determine if player is still connected
+    stop_stream_from params[:room_code]
 
     game = Game.find_by(room_code: params[:room_code])
     return if game.blank?
 
-    game.destroy && return if game.players.blank?
+    return if game.players.present?
 
-    ActionCable.server.broadcast(room_code, { type: 'PLAYER_LEFT', game: GameSerializer.new(game).serializable_hash })
-
-    stop_stream_from params[:room_code]
+    game.destroy
   end
 
   def set_player_id(data)
