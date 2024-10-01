@@ -3,6 +3,7 @@
 # Table name: responses
 #
 #  id         :bigint           not null, primary key
+#  archived   :boolean          default(FALSE)
 #  correct    :boolean          default(FALSE)
 #  text       :string           not null
 #  created_at :datetime         not null

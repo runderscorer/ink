@@ -7,7 +7,7 @@
 #  room_code  :string           not null
 #  round      :integer
 #  started_at :datetime
-#  status     :integer          default(0)
+#  status     :integer          default("waiting")
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  winner_id  :integer
@@ -77,6 +77,15 @@ class Game < ApplicationRecord
     else
       game_over!
     end
+  end
+
+  def restart!
+    game_prompts.destroy_all      
+    Vote.by_game(room_code).destroy_all
+    players.update_all(score: 0)
+    Response.where(game_id: id).update_all(archived: true)
+    assign_prompts!
+    update!(status: :gathering_responses, round: 1)
   end
 
   private

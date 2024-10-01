@@ -1,5 +1,5 @@
 class Api::V1::GamesController < ApplicationController
-  before_action :find_game, only: [:search, :start, :next_round]
+  before_action :find_game, only: [:search, :start, :next_round, :restart]
 
   def create
     room_code = game_attributes[:room_code] || Random.alphanumeric.first(6)
@@ -39,6 +39,17 @@ class Api::V1::GamesController < ApplicationController
     end
   end
 
+  def restart
+    player = Player.find_by(id: params[:player_id])
+    result = RestartGame.call(game: @game, player: player)
+
+    if result.success?
+      render status: :ok
+    else
+      render json: { error_message: result.error_message }, status: 400
+    end
+  end
+
   private
 
   def game_attributes
@@ -52,6 +63,13 @@ class Api::V1::GamesController < ApplicationController
   def broadcast_start_game
     ActionCable.server.broadcast(@game.room_code, {
       type: 'GAME_STARTED',
+      game: GameSerializer.new(@game).serializable_hash
+    })
+  end
+
+  def broadcast_restart_game
+    ActionCable.server.broadcast(@game.room_code, {
+      type: 'GAME_RESTARTED',
       game: GameSerializer.new(@game).serializable_hash
     })
   end

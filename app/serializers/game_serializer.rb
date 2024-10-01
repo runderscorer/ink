@@ -7,7 +7,7 @@
 #  room_code  :string           not null
 #  round      :integer
 #  started_at :datetime
-#  status     :integer          default(0)
+#  status     :integer          default("waiting")
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  winner_id  :integer
