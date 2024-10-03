@@ -15,13 +15,6 @@ class GameChannel < ApplicationCable::Channel
   def unsubscribed
      # TODO: Use background job with timer to determine if player is still connected
     stop_stream_from params[:room_code]
-
-    game = Game.find_by(room_code: params[:room_code])
-    return if game.blank?
-
-    return if game.players.present?
-
-    game.archive!
   end
 
   def set_player_id(data)
