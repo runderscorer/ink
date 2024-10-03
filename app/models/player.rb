@@ -16,6 +16,9 @@
 #
 class Player < ApplicationRecord
   validates_presence_of :name
+  validates_each :game_id, on: :create do |record, _attr, value|
+    record.errors.add(:base, 'Sorry, this game is full (8 players)') if Game.find(value).players.count >= 8
+  end
 
   belongs_to :game
   has_many :responses, dependent: :destroy
