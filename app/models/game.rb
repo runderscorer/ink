@@ -3,6 +3,7 @@
 # Table name: games
 #
 #  id         :bigint           not null, primary key
+#  archived   :boolean          default(FALSE)
 #  ended_at   :datetime
 #  room_code  :string           not null
 #  round      :integer
@@ -18,7 +19,7 @@ class Game < ApplicationRecord
   before_validation :normalize_room_code, if: -> { room_code.present? }
 
   validates :room_code, format: { with: /\A[\w\_]+\z/, message: 'must not include special characters' }, length: { minimum: 3, maximum: 10 }, presence: true
-  validates_uniqueness_of :room_code
+  validates_uniqueness_of :room_code, scope: :archived, conditions: -> { where(archived: false) }
 
   has_many :players, dependent: :destroy
   has_many :game_prompts, dependent: :destroy

@@ -3,6 +3,7 @@
 # Table name: games
 #
 #  id         :bigint           not null, primary key
+#  archived   :boolean          default(FALSE)
 #  ended_at   :datetime
 #  room_code  :string           not null
 #  round      :integer
@@ -17,12 +18,18 @@ require 'rails_helper'
 RSpec.describe 'Game', type: :model do
   context 'validations' do
     describe 'room_code' do
-      it 'should validate the uniqueness of a room_code' do
+      it 'should validate the uniqueness of a room_code and the archived status' do
         create(:game, room_code: 'TAKEN')
         game = build(:game, room_code: 'taken')
         game.save
 
         expect(game.errors.full_messages.last).to eq('Room code has already been taken')
+
+        create(:game, room_code: 'ARCHIVED', archived: true)
+        game = build(:game, room_code: 'ARCHIVED')
+        game.save
+
+        expect(game.valid?).to be true
       end
 
       it 'should validate the presence of a room_code' do

@@ -3,6 +3,7 @@
 # Table name: games
 #
 #  id         :bigint           not null, primary key
+#  archived   :boolean          default(FALSE)
 #  ended_at   :datetime
 #  room_code  :string           not null
 #  round      :integer
