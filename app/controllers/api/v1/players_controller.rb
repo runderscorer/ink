@@ -29,11 +29,12 @@ class Api::V1::PlayersController < ApplicationController
 
     render json: { errors: 'Player was not removed.' }, status: :ok and return unless player
 
-    game = set_new_host(player) if player.host?
+    set_new_host(player) if player.host?
 
+    game = player.game
     player.destroy
 
-    return unless game
+    return unless game.players.any?
 
     ActionCable.server.broadcast(game.room_code, { 
       type: 'PLAYER_LEFT', 
