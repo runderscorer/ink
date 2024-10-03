@@ -181,4 +181,14 @@ RSpec.describe 'Game', type: :model do
       end
     end
   end
+
+  describe '#archive!' do
+    it 'should update the archived status to true' do
+      game = create(:game, archived: false)
+
+      game.archive!
+
+      expect(game.archived).to be true
+    end
+  end
 end

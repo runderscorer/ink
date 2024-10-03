@@ -21,7 +21,7 @@ class GameChannel < ApplicationCable::Channel
 
     return if game.players.present?
 
-    game.destroy
+    game.archive!
   end
 
   def set_player_id(data)

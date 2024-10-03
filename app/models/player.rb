@@ -20,6 +20,4 @@ class Player < ApplicationRecord
   belongs_to :game
   has_many :responses, dependent: :destroy
   has_many :votes, dependent: :destroy
-
-  scope :by_game, ->(room_code) { where(game_id: Game.find_by(room_code: room_code).id) }
 end

@@ -39,7 +39,7 @@ class Game < ApplicationRecord
   end
 
   def assign_new_host(current_host)
-    destroy and return if players.where(host: false).blank?
+    archive! and return if players.where(host: false).blank?
 
     players.where.not(id: current_host.id).sample.update(host: true)
     self
@@ -88,6 +88,14 @@ class Game < ApplicationRecord
     Response.where(game_id: id).update_all(archived: true)
     assign_prompts!
     update!(status: :gathering_responses, round: 1)
+  end
+
+  def archive!
+    update!(archived: true)
+  end
+
+  def self.by_room_code(room_code)
+    find_by(room_code: room_code, archived: false)
   end
 
   private

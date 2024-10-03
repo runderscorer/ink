@@ -28,5 +28,5 @@ class Response < ApplicationRecord
 
   scope :correct, -> { where(correct: true) }
   scope :not_archived, -> { where(archived: false) }
-  scope :by_game, ->(room_code) { where(game_id: Game.find_by(room_code: room_code).id, archived: false).or(correct).order(text: :asc) }
+  scope :by_game, ->(room_code) { where(game_id: Game.by_room_code(room_code).id).or(correct).order(text: :asc) }
 end

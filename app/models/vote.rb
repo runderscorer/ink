@@ -18,5 +18,5 @@ class Vote < ApplicationRecord
   belongs_to :response
   belongs_to :game
 
-  scope :by_game, ->(room_code) { where(game_id: Game.find_by(room_code: room_code)) }
+  scope :by_game, ->(room_code) { where(game_id: Game.by_room_code(room_code).id) }
 end
