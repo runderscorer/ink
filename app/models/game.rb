@@ -23,6 +23,7 @@ class Game < ApplicationRecord
   has_many :players, dependent: :destroy
   has_many :game_prompts, dependent: :destroy
   has_many :prompts, through: :game_prompts
+  has_many :votes, dependent: :destroy
 
   enum status: { 
     waiting: 0, 

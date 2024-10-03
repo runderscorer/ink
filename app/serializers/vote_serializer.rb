@@ -5,6 +5,7 @@
 #  id          :bigint           not null, primary key
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  game_id     :integer
 #  player_id   :bigint
 #  response_id :integer
 #
@@ -15,7 +16,7 @@
 class VoteSerializer
   include JSONAPI::Serializer
 
-  attributes :id, :player_id, :response_id, :player_name
+  attributes :id, :player_id, :response_id, :player_name, :game_id
 
   belongs_to :player
   belongs_to :response

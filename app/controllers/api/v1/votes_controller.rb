@@ -4,7 +4,8 @@ class Api::V1::VotesController < ApplicationController
   def create
     vote = Vote.create(
       response_id: params[:response_id],
-      player_id: params[:player_id]
+      player_id: params[:player_id],
+      game_id: @game.id
     )
 
     ActionCable.server.broadcast(@game.room_code, {
