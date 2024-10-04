@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       resources :players, only: [:create, :update, :destroy]
       resources :responses, only: [:create]
       resources :votes, only: [:create]
+      resources :reactions, only: [:create]
     end
   end
 end

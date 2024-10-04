@@ -17,4 +17,10 @@
 class Reaction < ApplicationRecord
   belongs_to :player
   belongs_to :response
+
+  enum kind: { 
+    like: 0,
+    funny: 1,
+    smart: 2
+  }
 end
