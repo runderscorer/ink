@@ -14,5 +14,11 @@
 #  index_reactions_on_player_id    (player_id)
 #  index_reactions_on_response_id  (response_id)
 #
-RSpec.describe 'Reaction', type: :model do
+require 'rails_helper'
+
+RSpec.describe Reaction, type: :model do
+  context 'associations' do
+    it { should belong_to(:player) }
+    it { should belong_to(:response) }
+  end
 end

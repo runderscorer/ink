@@ -25,6 +25,7 @@ class Response < ApplicationRecord
   belongs_to :player, optional: true
   belongs_to :prompt
   has_many :votes
+  has_many :reactions
 
   scope :correct, -> { where(correct: true) }
   scope :not_archived, -> { where(archived: false) }

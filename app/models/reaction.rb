@@ -15,4 +15,6 @@
 #  index_reactions_on_response_id  (response_id)
 #
 class Reaction < ApplicationRecord
+  belongs_to :player
+  belongs_to :response
 end
