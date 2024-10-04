@@ -4,6 +4,7 @@ class RestartGame < BaseService
     return fail!('Game not started') if game.started_at.blank?
     return fail!('Host not found') if player.blank? || game.host.blank?
     return fail!('Only the host can start the next round') if player != game.host
+    return fail!('At least 2 poets are required to restart the game') if game.players.count < 2
 
     restart_game
 
