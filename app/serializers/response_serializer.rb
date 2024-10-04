@@ -32,7 +32,7 @@ class ResponseSerializer
     "#{object.player ? object.player.name : object.prompt.author}"
   end
 
-  attribute :votes do |object|
-    VoteSerializer.new(object.votes).serializable_hash
+  attribute :votes do |object, params|
+    VoteSerializer.new(object.votes.where(game_id: params[:game_id])).serializable_hash
   end
 end
