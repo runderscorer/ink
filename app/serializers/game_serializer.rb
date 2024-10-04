@@ -55,4 +55,22 @@ class GameSerializer
 
     object.players.where.not(score: high_score).order(score: :desc)
   end
+
+  attribute :most_liked, if: Proc.new { |record| record.game_over? } do |object|
+    most_liked = object.most_liked
+
+    { name: most_liked.name, count: most_liked.reaction_count, title: most_liked.most_liked_title } if most_liked.present?
+  end
+
+  attribute :funniest, if: Proc.new { |record| record.game_over? } do |object|
+    funniest = object.funniest
+
+    { name: funniest.name, count: funniest.reaction_count, title: funniest.funniest_title } if funniest.present?
+  end
+
+  attribute :smartest, if: Proc.new { |record| record.game_over? } do |object|
+    smartest = object.smartest
+
+    { name: smartest.name, count: smartest.reaction_count, title: smartest.smartest_title } if smartest.present?
+  end
 end

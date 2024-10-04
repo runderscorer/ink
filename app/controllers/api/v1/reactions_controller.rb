@@ -3,7 +3,7 @@ class Api::V1::ReactionsController < ApplicationController
     reaction = Reaction.create(reaction_params)
 
     if reaction.persisted?
-      render status: :ok
+      render json: { reaction: ReactionSerializer.new(reaction).serializable_hash }, status: :ok
     else
       render json: { error_message: 'There was an error submitting your reaction' }, status: 400
     end

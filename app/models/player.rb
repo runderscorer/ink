@@ -15,6 +15,8 @@
 #  index_players_on_game_id  (game_id)
 #
 class Player < ApplicationRecord
+  include CopyHelper
+
   validates_presence_of :name
   validates_each :game_id, on: :create do |record, _attr, value|
     record.errors.add(:base, 'Sorry, this game is full (8 players)') if Game.find(value).players.count >= 8

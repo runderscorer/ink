@@ -94,6 +94,39 @@ class Game < ApplicationRecord
     update!(archived: true)
   end
 
+  def most_liked
+    players
+      .joins(responses: :reactions)
+      .where(reactions: { kind: 'like' })
+      .group('players.id')
+      .select('players.id, players.name, COUNT(reactions.id) as reaction_count')
+      .order('reaction_count DESC')
+      .limit(1)
+      .first
+  end
+
+  def funniest
+    players
+      .joins(responses: :reactions)
+      .where(reactions: { kind: 'funny' })
+      .group('players.id')
+      .select('players.id, players.name, COUNT(reactions.id) as reaction_count')
+      .order('reaction_count DESC')
+      .limit(1)
+      .first
+  end
+
+  def smartest
+    players
+      .joins(responses: :reactions)
+      .where(reactions: { kind: 'smart' })
+      .group('players.id')
+      .select('players.id, players.name, COUNT(reactions.id) as reaction_count')
+      .order('reaction_count DESC')
+      .limit(1)
+      .first
+  end
+
   def self.by_room_code(room_code)
     find_by(room_code: room_code, archived: false)
   end
