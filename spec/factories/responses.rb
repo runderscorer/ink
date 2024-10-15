@@ -28,5 +28,9 @@ FactoryBot.define do
     trait :correct do
       correct   { true }
     end
+
+    trait :archived do
+      archived { true }
+    end
   end
 end
