@@ -72,6 +72,6 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def start_round_timer
-    StartRoundTimerJob.perform_now(@game.room_code)
+    StartRoundTimerJob.perform_now(@game.room_code, @game.round)
   end
 end
