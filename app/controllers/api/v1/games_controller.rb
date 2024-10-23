@@ -20,6 +20,7 @@ class Api::V1::GamesController < ApplicationController
 
     if result.success?
       broadcast_start_game
+      start_round_timer
 
       render status: :ok
     else
@@ -32,6 +33,7 @@ class Api::V1::GamesController < ApplicationController
     result = AdvanceRound.call(game: @game, player: player)
 
     if result.success?
+      start_round_timer
       render status: :ok
     else
       render json: { error_message: result.error_message }, status: 400
@@ -67,5 +69,9 @@ class Api::V1::GamesController < ApplicationController
       type: 'GAME_RESTARTED',
       game: GameSerializer.new(@game).serializable_hash
     })
+  end
+
+  def start_round_timer
+    StartRoundTimerJob.perform_now(@game.room_code)
   end
 end
