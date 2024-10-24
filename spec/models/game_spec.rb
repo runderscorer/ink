@@ -107,10 +107,15 @@ RSpec.describe 'Game', type: :model do
       expect(game.current_prompt).to be_nil
     end
 
-    it 'should return nil if the round is greater than the number of prompts' do
-      game = create(:game, :with_prompts, room_code: 'PIZZA', round: 100)
+    it 'should return a prompt for games that have been restarted' do
+      game = create(:game, :with_prompts, room_code: 'PIZZA', round: 4)
+      expect(game.current_prompt).to eq(game.prompts[0])
 
-      expect(game.current_prompt).to be_nil
+      game.update(round: 5)
+      expect(game.current_prompt).to eq(game.prompts[1])
+
+      game.update(round: 6)
+      expect(game.current_prompt).to eq(game.prompts[2])
     end
 
     it 'should return the prompt for the current round' do

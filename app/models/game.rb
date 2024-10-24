@@ -60,9 +60,9 @@ class Game < ApplicationRecord
   end
 
   def current_prompt
-    return if prompts.blank? || round.nil? || round > prompts.count
+    return if prompts.blank? || round.nil?
 
-    prompts[round - 1]
+    prompts[(round % MAX_ROUNDS) - 1]
   end
 
   def next_status!
@@ -87,7 +87,7 @@ class Game < ApplicationRecord
     players.update_all(score: 0)
     Response.where(game_id: id).update_all(archived: true)
     assign_prompts!
-    update!(status: :gathering_responses, round: 1)
+    update!(status: :gathering_responses, round: round + 1)
   end
 
   def archive!
