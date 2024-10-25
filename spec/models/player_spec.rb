@@ -41,6 +41,11 @@ RSpec.describe Player, type: :model do
   end
 
   context 'associations' do
-    it { should belong_to(:game) }
+    it 'should belong to a game' do
+      game = create(:game)
+      player = create(:player, game: game)
+
+      expect(player.game).to eq(game)
+    end
   end
 end
