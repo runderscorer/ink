@@ -74,7 +74,7 @@ class Game < ApplicationRecord
       update(status: :gathering_votes)
     when gathering_votes?
       viewing_scores!
-    when viewing_scores? && round < MAX_ROUNDS
+    when viewing_scores? && !last_round?
       gathering_responses!
     else
       game_over!
@@ -125,6 +125,10 @@ class Game < ApplicationRecord
       .order('reaction_count DESC')
       .limit(1)
       .first
+  end
+
+  def last_round?
+    round % MAX_ROUNDS == 0
   end
 
   def self.by_room_code(room_code)

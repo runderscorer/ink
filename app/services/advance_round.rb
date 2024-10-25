@@ -14,7 +14,7 @@ class AdvanceRound < BaseService
 
   def advance_round
     game.next_status!
-    game.increment!(:round) if game.round < Game::MAX_ROUNDS
+    game.increment!(:round) unless game.last_round?
 
     ActionCable.server.broadcast(game.room_code, {
       type: 'NEXT_ROUND',
