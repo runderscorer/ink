@@ -33,7 +33,7 @@ class Api::V1::GamesController < ApplicationController
     result = AdvanceRound.call(game: @game, player: player)
 
     if result.success?
-      start_round_timer
+      start_round_timer unless @game.game_over?
       render status: :ok
     else
       render json: { error_message: result.error_message }, status: 400
@@ -45,6 +45,7 @@ class Api::V1::GamesController < ApplicationController
     result = RestartGame.call(game: @game, player: player)
 
     if result.success?
+      start_round_timer
       render status: :ok
     else
       render json: { error_message: result.error_message }, status: 400
@@ -72,6 +73,15 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def start_round_timer
-    StartRoundTimerJob.perform_now(@game.room_code, @game.round)
+    cancel_previous_timer
+
+    StartRoundTimerJob.perform_later(@game.room_code, @game.round)
+  end
+
+  def cancel_previous_timer
+    return unless @game.round > 1
+    previous_round = @game.round - 1
+
+    REDIS.set("round_timer_#{@game.room_code}_#{previous_round}_canceled", true)
   end
 end

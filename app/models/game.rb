@@ -74,7 +74,7 @@ class Game < ApplicationRecord
       update(status: :gathering_votes)
     when gathering_votes?
       viewing_scores!
-    when viewing_scores? && !last_round?
+    when viewing_scores? && !final_round?
       gathering_responses!
     else
       game_over!
@@ -127,7 +127,7 @@ class Game < ApplicationRecord
       .first
   end
 
-  def last_round?
+  def final_round?
     round % MAX_ROUNDS == 0
   end
 
