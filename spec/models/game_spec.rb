@@ -196,4 +196,34 @@ RSpec.describe 'Game', type: :model do
       expect(game.archived).to be true
     end
   end
+
+  describe '#handle_all_responses_submitted!' do
+    it 'should update the status to gathering_votes if all responses have been submitted' do
+      game = create(:game, :with_prompts, :gathering_responses)
+
+      expect {
+        game.handle_all_responses_submitted!      
+      }.to have_broadcasted_to(game.room_code).with(
+        type: 'ALL_RESPONSES_SUBMITTED',
+        game: anything
+      )
+
+      expect(game.status).to eq('gathering_votes')
+    end
+  end
+
+  describe '#handle_timer_ended!' do
+    it 'should update the status to gathering_votes if all responses have been submitted' do
+      game = create(:game, :with_prompts, :gathering_responses)
+
+      expect {
+        game.handle_timer_ended!      
+      }.to have_broadcasted_to(game.room_code).with(
+        type: 'ROUND_TIMER_ENDED',
+        game: anything
+      )
+
+      expect(game.status).to eq('gathering_votes')
+    end
+  end
 end

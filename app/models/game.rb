@@ -71,7 +71,6 @@ class Game < ApplicationRecord
       gathering_responses!
     when gathering_responses?
       gathering_votes!
-      update(status: :gathering_votes)
     when gathering_votes?
       viewing_scores!
     when viewing_scores? && !final_round?
@@ -129,6 +128,29 @@ class Game < ApplicationRecord
 
   def final_round?
     round % MAX_ROUNDS == 0
+  end
+
+  def handle_all_responses_submitted!
+    next_status!
+    cancel_timer
+
+    ActionCable.server.broadcast(room_code, {
+      type: 'ALL_RESPONSES_SUBMITTED',
+      game: GameSerializer.new(self).serializable_hash
+    })
+  end
+
+  def handle_timer_ended!
+    next_status!
+
+    ActionCable.server.broadcast(room_code, {
+      type: 'ROUND_TIMER_ENDED',
+      game: GameSerializer.new(self).serializable_hash
+    })
+  end
+
+  def cancel_timer
+    REDIS.set("round_timer_#{room_code}_#{round}_canceled", true)
   end
 
   def self.by_room_code(room_code)
