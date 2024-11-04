@@ -17,5 +17,6 @@ FactoryBot.define do
   factory :vote do
     response
     player
+    game
   end
 end

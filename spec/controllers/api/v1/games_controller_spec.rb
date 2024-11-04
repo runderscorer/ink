@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::V1::GamesController, type: :controller do
   describe '#create' do
     it 'should create a new game with a room code' do
-      post :create, params: { room_code: 'pizza' }
+      post :create, params: { room_code: 'pizza', host_name: 'JUICEDEMON' }
 
       expect(response.status).to eq(200)
 
@@ -11,7 +11,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
     end
 
     it 'should create a new game with a random room code if one is not provided' do
-      post :create
+      post :create, params: { host_name: 'JUICEDEMON' }
 
       expect(response.status).to eq(200)
 
@@ -21,19 +21,26 @@ RSpec.describe Api::V1::GamesController, type: :controller do
     it 'should return an error message if the room code is already taken' do
       create(:game, room_code: 'TAKEN')
       
-      post :create, params: { room_code: 'TAKEN' }
+      post :create, params: { room_code: 'TAKEN', host_name: 'JUICEDEMON' }
 
       expect(response.status).to eq(400)
-      expect(parse_response['errors']).to eq(['Room code has already been taken'])
+      expect(parse_response['error_message']).to eq('Room code has already been taken')
+    end
+
+    it 'should return an error message if the player name is not included' do
+      post :create, params: { room_code: 'NOHOST' }
+
+      expect(response.status).to eq(400)
+      expect(parse_response['error_message']).to eq('Player name is required')
     end
 
     describe 'with host name' do
       it 'should create a new game with a host' do
-        post :create, params: { room_code: 'SHOWTIME', host_name: 'Beetlejuice' }
+        post :create, params: { room_code: 'SHOWTIME', host_name: 'JUICEDEMON' }
 
         expect(response.status).to eq(200)
       
-        expect(parse_response_attributes['host']['name']).to eq('Beetlejuice')
+        expect(parse_response_attributes['host']['name']).to eq('JUICEDEMON')
       end
     end
   end
@@ -81,6 +88,7 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       @game = create(:game)
       create_list(:player, 3, game: @game)
       create_list(:prompt, 3)
+      allow(StartRoundTimerJob).to receive(:perform_now)
     end
 
     it 'should broadcast a message with a game' do

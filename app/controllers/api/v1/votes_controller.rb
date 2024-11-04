@@ -2,7 +2,7 @@ class Api::V1::VotesController < ApplicationController
   before_action :find_game, only: [:create]
 
   def create
-    vote = Vote.create(
+    Vote.create(
       response_id: params[:response_id],
       player_id: params[:player_id],
       game_id: @game.id

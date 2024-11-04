@@ -63,5 +63,41 @@ RSpec.describe 'AdvanceRound', type: :service do
         game: anything
       )
     end
+
+    it 'should only update the status when the game is on the last round' do
+      game = create(:game, :with_prompts, :viewing_scores, round: 3)
+      host = create(:player, game: game, host: true)
+      result = AdvanceRound.call(game: game, player: host)
+
+      expect(result.success?).to be true
+      expect(game.reload.round).to eq(3)
+      expect(game.reload.status).to eq('game_over')
+    end
+
+    context 'when the game has been restarted' do
+      context 'when the game is not on the last round' do
+        it 'should increment the round and update the status' do
+          game = create(:game, :with_prompts, :viewing_scores, round: 4)
+          host = create(:player, game: game, host: true)
+          result = AdvanceRound.call(game: game, player: host)
+
+          expect(result.success?).to be true
+          expect(game.reload.round).to eq(5)
+          expect(game.reload.status).to eq('gathering_responses')
+        end
+      end
+
+      context 'when the game is on the last round' do
+        it 'should update the status' do
+          game = create(:game, :with_prompts, :viewing_scores, round: 6)
+          host = create(:player, game: game, host: true)
+          result = AdvanceRound.call(game: game, player: host)
+
+          expect(result.success?).to be true
+          expect(game.reload.round).to eq(6)
+          expect(game.reload.status).to eq('game_over')
+        end
+      end
+    end
   end
 end

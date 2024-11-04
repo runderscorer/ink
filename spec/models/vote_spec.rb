@@ -28,7 +28,7 @@ RSpec.describe Vote, type: :model do
         player = create(:player, game: @game)
         prompt = create(:prompt)
         response = create(:response, prompt: prompt)
-        @vote = create(:vote, response: response, player: player)
+        @vote = create(:vote, response: response, player: player, game: @game)
       end
 
       it 'should return votes by game' do

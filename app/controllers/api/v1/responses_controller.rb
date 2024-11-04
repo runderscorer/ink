@@ -5,7 +5,7 @@ class Api::V1::ResponsesController < ApplicationController
     if @game.current_prompt.blank?
       render json: { error_message: 'There was an error submitting your response' }, status: 400
     else
-      response = @game.current_prompt.responses.create(
+      @game.current_prompt.responses.create(
         player_id: params[:player_id],
         game_id: @game.id,
         text: params[:text]
@@ -16,7 +16,7 @@ class Api::V1::ResponsesController < ApplicationController
         game: GameSerializer.new(@game).serializable_hash
       })
 
-      handle_all_responses_submitted if all_responses_submitted?
+      @game.handle_all_responses_submitted! if all_responses_submitted?
 
       render status: :ok
     end
@@ -26,14 +26,5 @@ class Api::V1::ResponsesController < ApplicationController
 
   def all_responses_submitted?
     @game.current_prompt.responses.by_game(@game.room_code).count == @game.players.count + 1
-  end
-
-  def handle_all_responses_submitted
-    @game.next_status!
-
-    ActionCable.server.broadcast(@game.room_code, {
-      type: 'ALL_RESPONSES_SUBMITTED',
-      game: GameSerializer.new(@game).serializable_hash
-    })
   end
 end

@@ -107,10 +107,15 @@ RSpec.describe 'Game', type: :model do
       expect(game.current_prompt).to be_nil
     end
 
-    it 'should return nil if the round is greater than the number of prompts' do
-      game = create(:game, :with_prompts, room_code: 'PIZZA', round: 100)
+    it 'should return a prompt for games that have been restarted' do
+      game = create(:game, :with_prompts, room_code: 'PIZZA', round: 4)
+      expect(game.current_prompt).to eq(game.prompts[0])
 
-      expect(game.current_prompt).to be_nil
+      game.update(round: 5)
+      expect(game.current_prompt).to eq(game.prompts[1])
+
+      game.update(round: 6)
+      expect(game.current_prompt).to eq(game.prompts[2])
     end
 
     it 'should return the prompt for the current round' do
@@ -189,6 +194,36 @@ RSpec.describe 'Game', type: :model do
       game.archive!
 
       expect(game.archived).to be true
+    end
+  end
+
+  describe '#handle_all_responses_submitted!' do
+    it 'should update the status to gathering_votes if all responses have been submitted' do
+      game = create(:game, :with_prompts, :gathering_responses)
+
+      expect {
+        game.handle_all_responses_submitted!      
+      }.to have_broadcasted_to(game.room_code).with(
+        type: 'ALL_RESPONSES_SUBMITTED',
+        game: anything
+      )
+
+      expect(game.status).to eq('gathering_votes')
+    end
+  end
+
+  describe '#handle_timer_ended!' do
+    it 'should update the status to gathering_votes if all responses have been submitted' do
+      game = create(:game, :with_prompts, :gathering_responses)
+
+      expect {
+        game.handle_timer_ended!      
+      }.to have_broadcasted_to(game.room_code).with(
+        type: 'ROUND_TIMER_ENDED',
+        game: anything
+      )
+
+      expect(game.status).to eq('gathering_votes')
     end
   end
 end

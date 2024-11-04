@@ -60,9 +60,9 @@ class Game < ApplicationRecord
   end
 
   def current_prompt
-    return if prompts.blank? || round.nil? || round > prompts.count
+    return if prompts.blank? || round.nil?
 
-    prompts[round - 1]
+    prompts[(round % MAX_ROUNDS) - 1]
   end
 
   def next_status!
@@ -71,10 +71,9 @@ class Game < ApplicationRecord
       gathering_responses!
     when gathering_responses?
       gathering_votes!
-      update(status: :gathering_votes)
     when gathering_votes?
       viewing_scores!
-    when viewing_scores? && round < MAX_ROUNDS
+    when viewing_scores? && !final_round?
       gathering_responses!
     else
       game_over!
@@ -87,7 +86,7 @@ class Game < ApplicationRecord
     players.update_all(score: 0)
     Response.where(game_id: id).update_all(archived: true)
     assign_prompts!
-    update!(status: :gathering_responses, round: 1)
+    update!(status: :gathering_responses, round: round + 1)
   end
 
   def archive!
@@ -125,6 +124,33 @@ class Game < ApplicationRecord
       .order('reaction_count DESC')
       .limit(1)
       .first
+  end
+
+  def final_round?
+    round % MAX_ROUNDS == 0
+  end
+
+  def handle_all_responses_submitted!
+    next_status!
+    cancel_timer
+
+    ActionCable.server.broadcast(room_code, {
+      type: 'ALL_RESPONSES_SUBMITTED',
+      game: GameSerializer.new(self).serializable_hash
+    })
+  end
+
+  def handle_timer_ended!
+    next_status!
+
+    ActionCable.server.broadcast(room_code, {
+      type: 'ROUND_TIMER_ENDED',
+      game: GameSerializer.new(self).serializable_hash
+    })
+  end
+
+  def cancel_timer
+    REDIS.set("round_timer_#{room_code}_#{round}_canceled", true)
   end
 
   def self.by_room_code(room_code)

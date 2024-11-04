@@ -35,8 +35,8 @@ RSpec.describe 'CalculateScore', type: :service do
       ken_response = prompt.responses.create(player: ken, text: 'Shoryuken')
       ryu_response = prompt.responses.create(player: ryu, text: 'Hadouken')
 
-      create(:vote, response: correct_response, player: ryu)
-      create(:vote, response: ryu_response, player: ken)
+      create(:vote, response: correct_response, player: ryu, game: game)
+      create(:vote, response: ryu_response, player: ken, game: game)
 
       result = CalculateScore.call(game: game)
 
@@ -51,8 +51,8 @@ RSpec.describe 'CalculateScore', type: :service do
       ken_response = prompt.responses.create(player: ken, text: 'Shoryuken Championship Edition')
       ryu_response = prompt.responses.create(player: ryu, text: 'Hadouken Championship Edition')
 
-      create(:vote, response: correct_response, player: ken)
-      create(:vote, response: correct_response, player: ryu)
+      create(:vote, response: correct_response, player: ken, game: game)
+      create(:vote, response: correct_response, player: ryu, game: game)
 
       result = CalculateScore.call(game: game)
 
@@ -67,8 +67,8 @@ RSpec.describe 'CalculateScore', type: :service do
       ken_response = prompt.responses.create(player: ken, text: 'Shoryuken Turbo Edition')
       ryu_response = prompt.responses.create(player: ryu, text: 'Hadouken Turbo Edition')
 
-      create(:vote, response: ryu_response, player: ken)
-      create(:vote, response: ken_response, player: ryu)
+      create(:vote, response: ryu_response, player: ken, game: game)
+      create(:vote, response: ken_response, player: ryu, game: game)
 
       result = CalculateScore.call(game: game)
 
