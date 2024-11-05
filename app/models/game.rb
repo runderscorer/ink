@@ -127,6 +127,13 @@ class Game < ApplicationRecord
       .first
   end
 
+  def set_round_ends_at
+    Rails.cache.write(
+      "#{room_code}_round_ends_at",
+      100.seconds.from_now.to_i
+    )
+  end
+
   def self.by_room_code(room_code)
     find_by(room_code: room_code, archived: false)
   end

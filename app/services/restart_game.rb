@@ -15,6 +15,7 @@ class RestartGame < BaseService
 
   def restart_game
     game.restart!
+    game.set_round_ends_at
 
     ActionCable.server.broadcast(game.room_code, {
       type: 'GAME_STARTED',

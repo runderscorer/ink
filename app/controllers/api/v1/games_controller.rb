@@ -19,8 +19,6 @@ class Api::V1::GamesController < ApplicationController
     result = InitializeGame.call(game: @game)
 
     if result.success?
-      broadcast_start_game
-
       render status: :ok
     else
       render json: { error_message: result.error_message }, status: 400
@@ -53,19 +51,5 @@ class Api::V1::GamesController < ApplicationController
 
   def game_attributes
     params.permit(:room_code)
-  end
-
-  def broadcast_start_game
-    ActionCable.server.broadcast(@game.room_code, {
-      type: 'GAME_STARTED',
-      game: GameSerializer.new(@game).serializable_hash
-    })
-  end
-
-  def broadcast_restart_game
-    ActionCable.server.broadcast(@game.room_code, {
-      type: 'GAME_RESTARTED',
-      game: GameSerializer.new(@game).serializable_hash
-    })
   end
 end
