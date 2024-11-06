@@ -131,4 +131,37 @@ RSpec.describe Api::V1::GamesController, type: :controller do
       expect(parse_response['error_message']).to eq('Host not found')
     end
   end
+
+  describe '#timer_end' do
+    it 'should update the game status to gathering_votes' do
+      game = create(:game, :with_prompts, :gathering_responses)
+      player = create(:player, game: game)
+
+      patch :timer_end, params: { room_code: game.room_code, player_id: player.id }
+
+      expect(game.reload.status).to eq('gathering_votes')
+    end
+
+    it 'should not update the game status if the player does not belong to the game' do
+      game = create(:game, :with_prompts, :gathering_responses)
+      player = create(:player)
+
+      expect_any_instance_of(Game).not_to receive(:next_status!)
+
+      patch :timer_end, params: { room_code: game.room_code, player_id: player.id }
+
+      expect(game.reload.status).to eq('gathering_responses')
+    end
+
+    it 'should only update the game once if multiple requests are made by different players' do
+      game = create(:game, :with_prompts, :gathering_responses)
+      ken = create(:player, game: game)
+      ryu = create(:player, game: game)
+
+      patch :timer_end, params: { room_code: game.room_code, player_id: ken.id }
+      patch :timer_end, params: { room_code: game.room_code, player_id: ryu.id }
+
+      expect(game.reload.status).to eq('gathering_votes')
+    end
+  end
 end
