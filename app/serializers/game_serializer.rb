@@ -16,7 +16,7 @@
 class GameSerializer
   include JSONAPI::Serializer
 
-  attributes :room_code, :host, :started_at, :current_prompt, :round, :status, :max_rounds
+  attributes :room_code, :host, :started_at, :current_prompt, :round, :status, :max_rounds, :round_ends_at
 
   has_many :players
   has_many :prompts
@@ -72,5 +72,9 @@ class GameSerializer
     smartest = object.smartest
 
     { name: smartest.name, count: smartest.reaction_count, title: smartest.smartest_title } if smartest.present?
+  end
+
+  attribute :round_ends_at do |object|
+    Rails.cache.fetch("#{object.room_code}_round_ends_at")
   end
 end

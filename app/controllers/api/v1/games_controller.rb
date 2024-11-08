@@ -1,5 +1,5 @@
 class Api::V1::GamesController < ApplicationController
-  before_action :find_game, only: [:search, :start, :next_round, :restart]
+  before_action :find_game, only: [:search, :start, :next_round, :restart, :timer_end]
 
   def create
     result = CreateGame.call(room_code: game_attributes[:room_code], host_name: params[:host_name])
@@ -19,11 +19,28 @@ class Api::V1::GamesController < ApplicationController
     result = InitializeGame.call(game: @game)
 
     if result.success?
-      broadcast_start_game
-
       render status: :ok
     else
       render json: { error_message: result.error_message }, status: 400
+    end
+  end
+
+  def timer_end
+    return unless @game.gathering_responses? && @game.players.find_by(id: params[:player_id])
+
+    Game.transaction do 
+      @game.lock!
+
+      if @game.next_status!
+        ActionCable.server.broadcast(@game.room_code, {
+          type: 'ALL_RESPONSES_SUBMITTED',
+          game: GameSerializer.new(@game).serializable_hash
+        })
+
+        render status: :ok
+      else
+        render json: { error_message: 'Something went wrong' }, status: 400
+      end
     end
   end
 
@@ -53,19 +70,5 @@ class Api::V1::GamesController < ApplicationController
 
   def game_attributes
     params.permit(:room_code)
-  end
-
-  def broadcast_start_game
-    ActionCable.server.broadcast(@game.room_code, {
-      type: 'GAME_STARTED',
-      game: GameSerializer.new(@game).serializable_hash
-    })
-  end
-
-  def broadcast_restart_game
-    ActionCable.server.broadcast(@game.room_code, {
-      type: 'GAME_RESTARTED',
-      game: GameSerializer.new(@game).serializable_hash
-    })
   end
 end

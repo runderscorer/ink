@@ -14,6 +14,12 @@ class InitializeGame < BaseService
   def initialize_game
     game.start!
     game.assign_prompts!
+    game.set_round_ends_at
+
+    ActionCable.server.broadcast(game.room_code, {
+      type: 'GAME_STARTED',
+      game: GameSerializer.new(game).serializable_hash
+    })
   rescue StandardError => e
     fail!(e.message)
   end
