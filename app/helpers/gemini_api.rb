@@ -16,7 +16,7 @@ class GeminiApi
   private
 
   def fetch_response
-    response = self.class.post(
+    request = self.class.post(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=#{ENV['GEMINI_API_KEY']}",
       body: {
         contents: [
@@ -30,7 +30,7 @@ class GeminiApi
       headers: @headers
     )
 
-    json_response = JSON.parse(response)
+    json_response = JSON.parse(request.response.body)
     json_response.dig('candidates', 0, 'content', 'parts', 0, 'text')
   end
 end

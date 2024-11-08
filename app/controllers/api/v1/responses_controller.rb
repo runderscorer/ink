@@ -1,5 +1,5 @@
 class Api::V1::ResponsesController < ApplicationController
-  before_action :find_game, only: [:create]
+  before_action :find_game, only: [:create, :generate_text]
 
   def create
     if @game.current_prompt.blank?
@@ -8,7 +8,7 @@ class Api::V1::ResponsesController < ApplicationController
       response = @game.current_prompt.responses.create(
         player_id: params[:player_id],
         game_id: @game.id,
-        text: params[:help] ? use_gen_ai_response : params[:text]
+        text: params[:text]
       )
 
       ActionCable.server.broadcast(@game.room_code, {
@@ -20,6 +20,16 @@ class Api::V1::ResponsesController < ApplicationController
 
       render status: :ok
     end
+  end
+
+  def generate_text
+    if @game.current_prompt.blank?
+      render json: { error_message: 'There was an error generating a response' }, status: 400 and return
+    end
+
+    response = GeminiApi.new(@game.current_prompt.text).generate_response
+
+    render json: { text: response }, status: :ok
   end
 
   private
@@ -35,13 +45,5 @@ class Api::V1::ResponsesController < ApplicationController
       type: 'ALL_RESPONSES_SUBMITTED',
       game: GameSerializer.new(@game).serializable_hash
     })
-  end
-
-  def use_gen_ai_response
-    return unless @game.current_prompt
-
-    gen_ai = GeminiApi.new(@game.current_prompt.text)
-
-    gen_ai.generate_response
   end
 end

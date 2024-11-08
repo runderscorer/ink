@@ -16,15 +16,6 @@ RSpec.describe Api::V1::ResponsesController, type: :controller do
       expect(@game.current_prompt.responses.pluck(:text)).to include('more pineapple please')
     end
 
-    it 'should call the GeminiApi helper and generate a response if the help query parameter is used' do
-      expect_any_instance_of(GeminiApi).to receive(:generate_response).and_return('Stubbed Gemini response')
-
-      post :create, params: { help: true, player_id: @player.id, room_code: @game.room_code }
-
-      expect(@game.current_prompt.responses.count).to eq(2)
-      expect(@game.current_prompt.responses.pluck(:text)).to include('Stubbed Gemini response')
-    end
-
     it 'should update the game status to gathering_votes if all responses are submitted' do
       game = create(:game, :with_prompts)
       players = create_list(:player, 3, game: game)
@@ -51,6 +42,26 @@ RSpec.describe Api::V1::ResponsesController, type: :controller do
         type: 'NEW_RESPONSE',
         game: anything
       )
+    end
+  end
+
+  describe '#generate_text' do
+    it 'should return a response from the GeminiApi service' do
+      game = create(:game, :with_prompts)
+
+      expect_any_instance_of(GeminiApi).to receive(:generate_response).and_return('Stubbed Gemini response')  
+
+      get :generate_text, params: { room_code: game.room_code }
+
+      expect(response.body).to eq({ text: 'Stubbed Gemini response' }.to_json)
+    end
+
+    it 'should return an error message if there is no current prompt' do
+      game = create(:game)
+
+      get :generate_text, params: { room_code: game.room_code }
+
+      expect(response.body).to eq({ error_message: 'There was an error generating a response' }.to_json)
     end
   end
 end
