@@ -16,6 +16,15 @@ RSpec.describe Api::V1::ResponsesController, type: :controller do
       expect(@game.current_prompt.responses.pluck(:text)).to include('more pineapple please')
     end
 
+    it 'should call the GeminiApi helper and generate a response if the help query parameter is used' do
+      expect_any_instance_of(GeminiApi).to receive(:generate_response).and_return('Stubbed Gemini response')
+
+      post :create, params: { help: true, player_id: @player.id, room_code: @game.room_code }
+
+      expect(@game.current_prompt.responses.count).to eq(2)
+      expect(@game.current_prompt.responses.pluck(:text)).to include('Stubbed Gemini response')
+    end
+
     it 'should update the game status to gathering_votes if all responses are submitted' do
       game = create(:game, :with_prompts)
       players = create_list(:player, 3, game: game)

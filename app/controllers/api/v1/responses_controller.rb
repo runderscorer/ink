@@ -8,7 +8,7 @@ class Api::V1::ResponsesController < ApplicationController
       response = @game.current_prompt.responses.create(
         player_id: params[:player_id],
         game_id: @game.id,
-        text: params[:text]
+        text: params[:help] ? use_gen_ai_response : params[:text]
       )
 
       ActionCable.server.broadcast(@game.room_code, {
@@ -35,5 +35,13 @@ class Api::V1::ResponsesController < ApplicationController
       type: 'ALL_RESPONSES_SUBMITTED',
       game: GameSerializer.new(@game).serializable_hash
     })
+  end
+
+  def use_gen_ai_response
+    return unless @game.current_prompt
+
+    gen_ai = GeminiApi.new(@game.current_prompt.text)
+
+    gen_ai.generate_response
   end
 end
