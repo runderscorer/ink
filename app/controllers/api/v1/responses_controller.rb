@@ -1,5 +1,5 @@
 class Api::V1::ResponsesController < ApplicationController
-  before_action :find_game, only: [:create]
+  before_action :find_game, only: [:create, :generate_text]
 
   def create
     if @game.current_prompt.blank?
@@ -20,6 +20,16 @@ class Api::V1::ResponsesController < ApplicationController
 
       render status: :ok
     end
+  end
+
+  def generate_text
+    if @game.current_prompt.blank?
+      render json: { error_message: 'There was an error generating a response' }, status: 400 and return
+    end
+
+    response = GeminiApi.new(@game.current_prompt.text).generate_response
+
+    render json: { text: response }, status: :ok
   end
 
   private

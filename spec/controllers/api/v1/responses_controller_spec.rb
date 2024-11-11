@@ -44,4 +44,24 @@ RSpec.describe Api::V1::ResponsesController, type: :controller do
       )
     end
   end
+
+  describe '#generate_text' do
+    it 'should return a response from the GeminiApi service' do
+      game = create(:game, :with_prompts)
+
+      expect_any_instance_of(GeminiApi).to receive(:generate_response).and_return('Stubbed Gemini response')  
+
+      get :generate_text, params: { room_code: game.room_code }
+
+      expect(response.body).to eq({ text: 'Stubbed Gemini response' }.to_json)
+    end
+
+    it 'should return an error message if there is no current prompt' do
+      game = create(:game)
+
+      get :generate_text, params: { room_code: game.room_code }
+
+      expect(response.body).to eq({ error_message: 'There was an error generating a response' }.to_json)
+    end
+  end
 end

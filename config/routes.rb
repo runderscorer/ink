@@ -19,7 +19,10 @@ Rails.application.routes.draw do
       patch "/games/:room_code/timer_end", to: "games#timer_end"
 
       resources :players, only: [:create, :update, :destroy]
+
       resources :responses, only: [:create]
+      get "/responses/generate_text", to: "responses#generate_text"
+
       resources :votes, only: [:create]
       resources :reactions, only: [:create]
     end

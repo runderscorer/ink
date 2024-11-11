@@ -38,6 +38,8 @@ gem "rack-cors"
 
 gem 'jsonapi-serializer'
 
+gem 'httparty'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
@@ -47,6 +49,7 @@ group :development, :test do
   gem "annotate"
   gem "faker"
   gem "shoulda-matchers"
+  gem "dotenv-rails"
 end
 
 group :development do
@@ -54,3 +57,6 @@ group :development do
   # gem "spring"
 end
 
+group :test do
+  gem "webmock"
+end
